@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Công cụ ảnh — Minh Nhật</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#080D18; --panel:#0F1830; --panel-2:#131E3D; --line:#22304F;
+    --blue:#2F6FED; --blue-deep:#1B3E9E; --cyan:#4DD8FF;
+    --text:#E9EEFB; --muted:#8695B7;
+    --mono:'JetBrains Mono', monospace; --display:'Space Grotesk', sans-serif; --body:'Inter', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--ink); color:var(--text); font-family:var(--body); line-height:1.6;}
+  a{color:inherit;text-decoration:none;}
+
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; background:rgba(8,13,24,.92); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .back{font-family:var(--mono); font-size:13px; color:var(--cyan); display:flex; gap:8px; align-items:center;}
+  .topbar .tc{font-family:var(--mono); font-size:12px; color:var(--muted);}
+
+  main{max-width:1100px; margin:0 auto; padding:56px 24px 100px;}
+  .page-head{margin-bottom:48px;}
+  .page-head .eyebrow{font-family:var(--mono); font-size:12px; color:var(--cyan); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px;}
+  .page-head h1{font-family:var(--display); font-size:clamp(28px,4vw,42px); font-weight:700; margin-bottom:12px;}
+  .page-head p{color:var(--muted); max-width:560px;}
+
+  .tool-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:32px; margin-bottom:32px;
+  }
+  .tool-head{display:flex; align-items:center; gap:12px; margin-bottom:24px;}
+  .tool-head .tc-label{font-family:var(--mono); font-size:11px; color:var(--cyan);}
+  .tool-head h2{font-family:var(--display); font-size:22px; font-weight:600;}
+  .tool-head p{color:var(--muted); font-size:13px; margin-top:4px;}
+
+  .dropzone{
+    border:1.5px dashed var(--line); border-radius:12px; padding:28px;
+    text-align:center; cursor:pointer; transition:.2s; margin-bottom:24px;
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+  }
+  .dropzone:hover, .dropzone.drag{border-color:var(--cyan); background:rgba(77,216,255,.05); color:var(--text);}
+  .dropzone strong{color:var(--cyan);}
+  input[type=file]{display:none;}
+
+  .workspace{display:none; gap:32px; grid-template-columns:1fr 260px;}
+  .workspace.active{display:grid;}
+  @media(max-width:720px){.workspace.active{grid-template-columns:1fr;}}
+
+  .canvas-frame{
+    background:#000; border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; display:flex; align-items:center; justify-content:center;
+    touch-action:none; cursor:grab; position:relative;
+  }
+  .canvas-frame.grabbing{cursor:grabbing;}
+  .canvas-frame canvas{display:block;}
+
+  .controls{display:flex; flex-direction:column; gap:20px;}
+  .field label{font-family:var(--mono); font-size:12px; color:var(--muted); display:block; margin-bottom:8px;}
+  select, .field input[type=range]{width:100%;}
+  select{
+    background:var(--panel-2); color:var(--text); border:1px solid var(--line);
+    border-radius:8px; padding:10px 12px; font-family:var(--body); font-size:14px;
+  }
+  input[type=range]{-webkit-appearance:none; height:4px; background:var(--line); border-radius:4px; outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--cyan); cursor:pointer; box-shadow:0 0 8px rgba(77,216,255,.6);}
+  .range-val{font-family:var(--mono); font-size:12px; color:var(--cyan); margin-top:6px;}
+
+  .btn{
+    font-family:var(--mono); font-size:13px; font-weight:500;
+    padding:12px 20px; border-radius:8px; border:1px solid var(--line);
+    cursor:pointer; text-align:center; transition:.2s; background:transparent; color:var(--text);
+  }
+  .btn-primary{background:var(--blue); border-color:var(--blue); color:#fff;}
+  .btn-primary:hover{background:var(--blue-deep); box-shadow:0 0 20px rgba(47,111,237,.4);}
+  .btn-ghost:hover{border-color:var(--cyan);}
+  .hint{font-family:var(--mono); font-size:11px; color:var(--muted); line-height:1.6;}
+
+  .sharpen-preview{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;}
+  @media(max-width:640px){.sharpen-preview{grid-template-columns:1fr;}}
+  .preview-box{background:#000; border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .preview-box .lbl{font-family:var(--mono); font-size:11px; color:var(--muted); padding:8px 12px; background:var(--panel-2); border-bottom:1px solid var(--line);}
+  .preview-box canvas{display:block; width:100%; height:auto;}
+
+  footer{text-align:center; padding:24px; font-family:var(--mono); font-size:11px; color:var(--muted); border-top:1px solid var(--line);}
+
+  /* ===== HAMBURGER + DRAWER MENU ===== */
+  .hamburger-btn{
+    width:40px; height:40px; border-radius:8px; border:1px solid var(--line);
+    background:var(--panel-2); display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:4px; cursor:pointer; flex-shrink:0;
+  }
+  .hamburger-btn span{width:18px; height:2px; background:var(--text); border-radius:2px;}
+
+  .drawer-overlay{
+    position:fixed; inset:0; background:rgba(3,6,14,.6); backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:200;
+  }
+  .drawer-overlay.open{opacity:1; pointer-events:auto;}
+
+  .drawer{
+    position:fixed; top:0; left:0; bottom:0; width:280px; max-width:80vw;
+    background:var(--panel); border-right:1px solid var(--line);
+    transform:translateX(-100%); transition:transform .3s ease; z-index:201;
+    padding:24px 16px; display:flex; flex-direction:column; gap:4px; overflow-y:auto;
+  }
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 8px 20px; margin-bottom:12px; border-bottom:1px solid var(--line);
+  }
+  .drawer-head .tc{font-family:var(--mono); font-size:11px; color:var(--cyan); letter-spacing:1px;}
+  .drawer-close{background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; line-height:1;}
+  .menu-item{
+    font-family:var(--display); font-size:15px; font-weight:500;
+    padding:12px 14px; border-radius:8px; cursor:pointer; transition:.15s;
+  }
+  .menu-item:hover{background:rgba(77,216,255,.08); color:var(--cyan);}
+  .menu-group-label{
+    font-family:var(--mono); font-size:11px; color:var(--cyan); letter-spacing:1px;
+    text-transform:uppercase; margin:18px 0 6px; padding:0 14px;
+  }
+  .sub-item{
+    font-family:var(--mono); font-size:13px; color:var(--muted);
+    padding:10px 14px 10px 28px; border-radius:8px; cursor:pointer;
+    position:relative; transition:.15s;
+  }
+  .sub-item::before{content:'›'; position:absolute; left:14px; color:var(--blue);}
+  .sub-item:hover{background:rgba(77,216,255,.08); color:var(--text);}
+
+  /* ===== TOOL ICON MARQUEE ===== */
+  .marquee-wrap{
+    overflow:hidden; border:1px solid var(--line); border-radius:16px;
+    background:var(--panel); padding:24px 0; margin-bottom:48px; position:relative;
+  }
+  .marquee-wrap::before, .marquee-wrap::after{
+    content:''; position:absolute; top:0; bottom:0; width:60px; z-index:2; pointer-events:none;
+  }
+  .marquee-wrap::before{left:0; background:linear-gradient(90deg, var(--panel), transparent);}
+  .marquee-wrap::after{right:0; background:linear-gradient(270deg, var(--panel), transparent);}
+  .marquee-track{display:flex; gap:16px; padding:0 24px; width:max-content;}
+  .icon-badge{
+    flex:0 0 auto; width:96px; display:flex; flex-direction:column; align-items:center; gap:10px;
+    padding:16px 10px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+  }
+  .icon-badge img{width:30px; height:30px; object-fit:contain;}
+  .icon-badge .fallback{
+    display:none; width:30px; height:30px; border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--cyan)); align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:10px; font-weight:600; color:#fff;
+  }
+  .icon-badge .name{font-family:var(--mono); font-size:10.5px; color:var(--muted); text-align:center; white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<nav class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="tc">MENU</span>
+    <button class="drawer-close" id="drawerClose">✕</button>
+  </div>
+  <div class="menu-item" id="menuHome">🏠 Home</div>
+  <div class="menu-group-label">Công cụ</div>
+  <div class="sub-item" data-target="idphoto">Làm ảnh thẻ</div>
+  <div class="sub-item" data-target="sharpen">Làm nét ảnh</div>
+</nav>
+
+<div class="topbar">
+  <button class="hamburger-btn" id="hamburgerBtn"><span></span><span></span><span></span></button>
+  <span class="tc">TOOLS.APP</span>
+</div>
+
+<main>
+  <div class="page-head">
+    <div class="eyebrow">// Công cụ xử lý ảnh</div>
+    <h1>Tool xử lý ảnh nhanh</h1>
+    <p>Chạy trực tiếp trên trình duyệt — không upload lên server, ảnh của bạn không rời khỏi máy.</p>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- TOOL 1: ẢNH THẺ -->
+  <div class="tool-card" id="idphoto">
+    <div class="tool-head">
+      <div>
+        <span class="tc-label">// TOOL_01</span>
+        <h2>Cắt ảnh thẻ chuẩn in</h2>
+        <p>Chọn khổ ảnh, kéo để canh vị trí, xuất file đúng kích thước pixel để in.</p>
+      </div>
+    </div>
+
+    <div class="dropzone" id="dz1">
+      📷 Kéo thả ảnh vào đây, hoặc <strong>bấm để chọn ảnh</strong>
+      <input type="file" id="file1" accept="image/*">
+    </div>
+
+    <div class="workspace" id="workspace1">
+      <div class="canvas-frame" id="frame1">
+        <canvas id="canvas1"></canvas>
+      </div>
+      <div class="controls">
+        <div class="field">
+          <label>Khổ ảnh</label>
+          <select id="idSize">
+            <option value="3x4">3 × 4 cm (phổ biến nhất)</option>
+            <option value="4x6">4 × 6 cm</option>
+            <option value="2x3">2 × 3 cm</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Phóng to / thu nhỏ</label>
+          <input type="range" id="zoom1" min="1" max="3" step="0.01" value="1">
+        </div>
+        <p class="hint">Kéo ảnh trong khung để canh giữa mặt. Kéo thanh trượt để zoom.</p>
+        <button class="btn btn-primary" id="download1">Tải ảnh (PNG, chuẩn in 300dpi)</button>
+        <button class="btn btn-ghost" id="reset1">Chọn ảnh khác</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOL 2: LÀM NÉT -->
+  <div class="tool-card" id="sharpen">
+    <div class="tool-head">
+      <div>
+        <span class="tc-label">// TOOL_02</span>
+        <h2>Làm nét ảnh</h2>
+        <p>Tăng độ sắc nét cho ảnh mờ nhẹ — hữu ích cho thumbnail hoặc ảnh chụp màn hình video.</p>
+      </div>
+    </div>
+
+    <div class="dropzone" id="dz2">
+      🖼️ Kéo thả ảnh vào đây, hoặc <strong>bấm để chọn ảnh</strong>
+      <input type="file" id="file2" accept="image/*">
+    </div>
+
+    <div class="workspace" id="workspace2" style="grid-template-columns:1fr 260px;">
+      <div>
+        <div class="sharpen-preview">
+          <div class="preview-box"><div class="lbl">GỐC</div><canvas id="canvasOrig"></canvas></div>
+          <div class="preview-box"><div class="lbl">SAU KHI LÀM NÉT</div><canvas id="canvasSharp"></canvas></div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="field">
+          <label>Độ nét</label>
+          <input type="range" id="sharpAmount" min="0" max="100" step="1" value="35">
+          <div class="range-val" id="sharpVal">35%</div>
+        </div>
+        <p class="hint">Ảnh lớn sẽ được thu về tối đa 1600px chiều dài để xử lý mượt.</p>
+        <button class="btn btn-primary" id="download2">Tải ảnh đã làm nét</button>
+        <button class="btn btn-ghost" id="reset2">Chọn ảnh khác</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 MINH NHẬT — TOOLS · XỬ LÝ TRỰC TIẾP TRÊN TRÌNH DUYỆT</footer>
+
+<script>
+/* ================= DRAWER MENU ================= */
+(function(){
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const openBtn = document.getElementById('hamburgerBtn');
+  const closeBtn = document.getElementById('drawerClose');
+
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('open'); }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('open'); }
+
+  openBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+
+  document.getElementById('menuHome').addEventListener('click', ()=>{
+    window.location.href = 'portfolio.html';
+  });
+
+  document.querySelectorAll('.sub-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const targetId = item.getAttribute('data-target');
+      closeDrawer();
+      setTimeout(()=>{
+        document.getElementById(targetId).scrollIntoView({behavior:'smooth', block:'start'});
+      }, 200);
+    });
+  });
+})();
+
+/* ================= DẢI ICON CÔNG CỤ (marquee) ================= */
+(function(){
+  const track = document.getElementById('marqueeTrack');
+  const TOOLS = [
+    { name:'GitHub', slug:'github', init:'GH' },
+    { name:'ChatGPT', slug:'openai', init:'GPT' },
+    { name:'Gemini', slug:'googlegemini', init:'GM' },
+    { name:'Google Flow', slug:'', init:'FLOW' },
+    { name:'ElevenLabs', slug:'elevenlabs', init:'11L' },
+    { name:'VS Code', slug:'visualstudiocode', init:'VS' },
+    { name:'CapCut', slug:'capcut', init:'CC' },
+    { name:'Premiere Pro', slug:'adobepremierepro', init:'PR' },
+    { name:'DaVinci Resolve', slug:'davinciresolve', init:'DR' }
+  ];
+
+  function makeBadge(tool){
+    const el = document.createElement('div');
+    el.className = 'icon-badge';
+    const imgHtml = tool.slug
+      ? `<img src="https://cdn.simpleicons.org/${tool.slug}/ffffff" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+      : `<img src="" style="display:none;">`;
+    el.innerHTML = `
+      ${imgHtml}
+      <span class="fallback" style="${tool.slug ? '' : 'display:flex;'}">${tool.init}</span>
+      <span class="name">${tool.name}</span>
+    `;
+    return el;
+  }
+
+  // nhân đôi danh sách để tạo vòng lặp liền mạch
+  const fullList = [...TOOLS, ...TOOLS];
+  fullList.forEach(tool => track.appendChild(makeBadge(tool)));
+
+  let position = 0;
+  let step = 0;
+  let singleSetWidth = 0;
+
+  function measure(){
+    const firstCard = track.children[0];
+    const cardWidth = firstCard.getBoundingClientRect().width;
+    const gap = 16;
+    step = cardWidth + gap;
+    singleSetWidth = step * TOOLS.length;
+    position = -singleSetWidth;
+    track.style.transition = 'none';
+    track.style.transform = `translateX(${position}px)`;
+  }
+
+  window.addEventListener('load', measure);
+  window.addEventListener('resize', measure);
+
+  setInterval(()=>{
+    position += step;
+    track.style.transition = 'transform .6s ease';
+    track.style.transform = `translateX(${position}px)`;
+    if(position >= 0){
+      setTimeout(()=>{
+        track.style.transition = 'none';
+        position = -singleSetWidth;
+        track.style.transform = `translateX(${position}px)`;
+      }, 600);
+    }
+  }, 1500);
+})();
+
+/* ================= TOOL 1: ẢNH THẺ ================= */
+(function(){
+  const dz = document.getElementById('dz1');
+  const fileInput = document.getElementById('file1');
+  const workspace = document.getElementById('workspace1');
+  const frame = document.getElementById('frame1');
+  const canvas = document.getElementById('canvas1');
+  const ctx = canvas.getContext('2d');
+  const sizeSelect = document.getElementById('idSize');
+  const zoomSlider = document.getElementById('zoom1');
+  const downloadBtn = document.getElementById('download1');
+  const resetBtn = document.getElementById('reset1');
+
+  const SIZES = { '3x4':{w:3,h:4}, '4x6':{w:4,h:6}, '2x3':{w:2,h:3} };
+  let img = null, baseScale = 1, offsetX = 0, offsetY = 0, dragging = false, lastX = 0, lastY = 0;
+  const DISPLAY_H = 360;
+
+  function currentRatio(){ return SIZES[sizeSelect.value]; }
+
+  function setupCanvasSize(){
+    const r = currentRatio();
+    const dispW = Math.round(DISPLAY_H * (r.w / r.h));
+    canvas.width = dispW; canvas.height = DISPLAY_H;
+    canvas.style.width = dispW + 'px'; canvas.style.height = DISPLAY_H + 'px';
+  }
+
+  function fitImage(){
+    if(!img) return;
+    baseScale = Math.max(canvas.width / img.width, canvas.height / img.height);
+    offsetX = 0; offsetY = 0;
+    zoomSlider.value = 1;
+    draw();
+  }
+
+  function draw(){
+    if(!img) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const scale = baseScale * parseFloat(zoomSlider.value);
+    const dw = img.width * scale, dh = img.height * scale;
+    const maxOX = Math.max(0, (dw - canvas.width)/2);
+    const maxOY = Math.max(0, (dh - canvas.height)/2);
+    offsetX = Math.min(maxOX, Math.max(-maxOX, offsetX));
+    offsetY = Math.min(maxOY, Math.max(-maxOY, offsetY));
+    const x = (canvas.width - dw)/2 + offsetX;
+    const y = (canvas.height - dh)/2 + offsetY;
+    ctx.drawImage(img, x, y, dw, dh);
+  }
+
+  function loadFile(file){
+    if(!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const image = new Image();
+      image.onload = () => {
+        img = image;
+        workspace.classList.add('active');
+        setupCanvasSize();
+        fitImage();
+      };
+      image.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  dz.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => loadFile(e.target.files[0]));
+  ['dragover','dragleave','drop'].forEach(ev=>{
+    dz.addEventListener(ev, e=>{
+      e.preventDefault();
+      dz.classList.toggle('drag', ev==='dragover');
+      if(ev==='drop') loadFile(e.dataTransfer.files[0]);
+    });
+  });
+
+  sizeSelect.addEventListener('change', ()=>{ setupCanvasSize(); fitImage(); });
+  zoomSlider.addEventListener('input', draw);
+
+  function pointerDown(e){
+    dragging = true; frame.classList.add('grabbing');
+    const p = e.touches ? e.touches[0] : e;
+    lastX = p.clientX; lastY = p.clientY;
+  }
+  function pointerMove(e){
+    if(!dragging) return;
+    const p = e.touches ? e.touches[0] : e;
+    offsetX += (p.clientX - lastX);
+    offsetY += (p.clientY - lastY);
+    lastX = p.clientX; lastY = p.clientY;
+    draw();
+  }
+  function pointerUp(){ dragging = false; frame.classList.remove('grabbing'); }
+
+  canvas.addEventListener('mousedown', pointerDown);
+  window.addEventListener('mousemove', pointerMove);
+  window.addEventListener('mouseup', pointerUp);
+  canvas.addEventListener('touchstart', pointerDown);
+  canvas.addEventListener('touchmove', pointerMove);
+  canvas.addEventListener('touchend', pointerUp);
+
+  downloadBtn.addEventListener('click', ()=>{
+    if(!img) return;
+    const r = currentRatio();
+    const targetW = Math.round(r.w / 2.54 * 300);
+    const targetH = Math.round(r.h / 2.54 * 300);
+    const exportScale = targetW / canvas.width;
+    const off = document.createElement('canvas');
+    off.width = targetW; off.height = targetH;
+    const octx = off.getContext('2d');
+    const scale = baseScale * parseFloat(zoomSlider.value);
+    const dw = img.width * scale, dh = img.height * scale;
+    const x = (canvas.width - dw)/2 + offsetX;
+    const y = (canvas.height - dh)/2 + offsetY;
+    octx.drawImage(img, x*exportScale, y*exportScale, dw*exportScale, dh*exportScale);
+    off.toBlob(blob=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `anh-the-${sizeSelect.value}.png`;
+      a.click();
+    }, 'image/png');
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    img = null; workspace.classList.remove('active'); fileInput.value = '';
+  });
+})();
+
+/* ================= TOOL 2: LÀM NÉT ẢNH ================= */
+(function(){
+  const dz = document.getElementById('dz2');
+  const fileInput = document.getElementById('file2');
+  const workspace = document.getElementById('workspace2');
+  const canvasOrig = document.getElementById('canvasOrig');
+  const canvasSharp = document.getElementById('canvasSharp');
+  const ctxOrig = canvasOrig.getContext('2d');
+  const ctxSharp = canvasSharp.getContext('2d');
+  const amountSlider = document.getElementById('sharpAmount');
+  const amountVal = document.getElementById('sharpVal');
+  const downloadBtn = document.getElementById('download2');
+  const resetBtn = document.getElementById('reset2');
+
+  const MAX_DIM = 1600;
+  let baseImageData = null;
+
+  function loadFile(file){
+    if(!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const image = new Image();
+      image.onload = () => {
+        let w = image.width, h = image.height;
+        if(Math.max(w,h) > MAX_DIM){
+          const s = MAX_DIM / Math.max(w,h);
+          w = Math.round(w*s); h = Math.round(h*s);
+        }
+        canvasOrig.width = w; canvasOrig.height = h;
+        canvasSharp.width = w; canvasSharp.height = h;
+        ctxOrig.drawImage(image, 0, 0, w, h);
+        baseImageData = ctxOrig.getImageData(0,0,w,h);
+        workspace.classList.add('active');
+        applySharpen();
+      };
+      image.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function applySharpen(){
+    if(!baseImageData) return;
+    const amount = parseFloat(amountSlider.value);
+    amountVal.textContent = amount + '%';
+    const k = (amount/100) * 2; // cường độ kernel
+    const w = baseImageData.width, h = baseImageData.height;
+    const src = baseImageData.data;
+    const out = ctxSharp.createImageData(w,h);
+    const dst = out.data;
+    const kernel = [0,-k,0, -k,1+4*k,-k, 0,-k,0];
+
+    for(let y=0; y<h; y++){
+      for(let x=0; x<w; x++){
+        const i = (y*w+x)*4;
+        if(x===0||y===0||x===w-1||y===h-1){
+          dst[i]=src[i]; dst[i+1]=src[i+1]; dst[i+2]=src[i+2]; dst[i+3]=src[i+3];
+          continue;
+        }
+        for(let c=0;c<3;c++){
+          let sum = 0, ki = 0;
+          for(let dy=-1; dy<=1; dy++){
+            for(let dx=-1; dx<=1; dx++){
+              const idx = ((y+dy)*w + (x+dx))*4 + c;
+              sum += src[idx] * kernel[ki++];
+            }
+          }
+          dst[i+c] = Math.min(255, Math.max(0, sum));
+        }
+        dst[i+3] = src[i+3];
+      }
+    }
+    ctxSharp.putImageData(out, 0, 0);
+  }
+
+  dz.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', e => loadFile(e.target.files[0]));
+  ['dragover','dragleave','drop'].forEach(ev=>{
+    dz.addEventListener(ev, e=>{
+      e.preventDefault();
+      dz.classList.toggle('drag', ev==='dragover');
+      if(ev==='drop') loadFile(e.dataTransfer.files[0]);
+    });
+  });
+
+  let debounce;
+  amountSlider.addEventListener('input', ()=>{
+    clearTimeout(debounce);
+    debounce = setTimeout(applySharpen, 60);
+  });
+
+  downloadBtn.addEventListener('click', ()=>{
+    canvasSharp.toBlob(blob=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'anh-da-lam-net.png';
+      a.click();
+    }, 'image/png');
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    baseImageData = null; workspace.classList.remove('active'); fileInput.value = '';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minh Nhật — Video Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#080D18;
+    --panel:#0F1830;
+    --panel-2:#131E3D;
+    --line:#22304F;
+    --blue:#2F6FED;
+    --blue-deep:#1B3E9E;
+    --cyan:#4DD8FF;
+    --text:#E9EEFB;
+    --muted:#8695B7;
+    --mono:'JetBrains Mono', monospace;
+    --display:'Space Grotesk', sans-serif;
+    --body:'Inter', sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  /* background texture */
+  body::before{
+    content:'';
+    position:fixed;inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:.06;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ===== TIMELINE NAV (signature element) ===== */
+  .timeline-nav{
+    position:sticky; top:0; z-index:100;
+    background:rgba(8,13,24,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .timeline-track{
+    display:flex; align-items:stretch;
+    max-width:1200px; margin:0 auto;
+    padding:0 24px;
+    overflow-x:auto;
+  }
+  .timeline-track::-webkit-scrollbar{display:none;}
+  .tl-item{
+    flex:0 0 auto;
+    display:flex; flex-direction:column;
+    gap:4px;
+    padding:14px 20px;
+    border-right:1px solid var(--line);
+    cursor:pointer;
+    position:relative;
+    transition:background .2s ease;
+  }
+  .tl-item:hover{background:rgba(77,216,255,.06);}
+  .tl-item .tc{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--cyan);
+    letter-spacing:.5px;
+  }
+  .tl-item .lbl{
+    font-family:var(--display);
+    font-size:13px;
+    font-weight:500;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .tl-item.active .lbl{color:var(--text);}
+  .tl-item.active::after{
+    content:'';
+    position:absolute; left:0; right:0; bottom:-1px;
+    height:2px; background:var(--cyan);
+    box-shadow:0 0 8px var(--cyan);
+  }
+
+  /* ===== PROGRESS PLAYHEAD ===== */
+  .nav-progress{
+    height:3px; background:var(--line); position:relative; overflow:hidden;
+    box-shadow:inset 0 0 1px rgba(0,0,0,.5);
+  }
+  .nav-progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--blue), var(--cyan));
+    box-shadow:0 0 12px var(--cyan);
+    transition:width .15s linear;
+  }
+  .nav-progress-fill::after{
+    content:''; position:absolute; right:-4px; top:50%; transform:translateY(-50%);
+    width:10px; height:10px; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 8px var(--cyan);
+  }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal{
+    opacity:0; transform:translateY(32px);
+    transition:opacity .8s cubic-bezier(.2,.68,.4,1) 0s, 
+              transform .8s cubic-bezier(.2,.68,.4,1) 0s;
+  }
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+  .reveal.stagger-1{transition-delay:0.1s;}
+  .reveal.stagger-2{transition-delay:0.2s;}
+  .reveal.stagger-3{transition-delay:0.3s;}
+  .tl-item .tick{
+    position:absolute; bottom:0; left:0;
+    width:1px; height:6px; background:var(--muted);
+    opacity:.4;
+  }
+
+  /* ===== NAV PROGRESS (playhead) ===== */
+  .nav-progress{
+    height:2px; background:var(--line); position:relative; overflow:hidden;
+  }
+  .nav-progress-fill{
+    position:absolute; top:0; left:0; bottom:0; width:0%;
+    background:linear-gradient(90deg, var(--blue), var(--cyan));
+    box-shadow:0 0 10px var(--cyan);
+    transition:width .1s linear;
+  }
+  .nav-progress-fill::after{
+    content:''; position:absolute; right:-3px; top:50%; transform:translateY(-50%);
+    width:8px; height:8px; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 8px var(--cyan);
+  }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal{
+    opacity:0; transform:translateY(28px);
+    transition:opacity .7s cubic-bezier(.22,.68,.36,1), transform .7s cubic-bezier(.22,.68,.36,1);
+  }
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  section{position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:100px 24px;}
+
+  /* ===== HERO ===== */
+  .hero{
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:40px;
+    align-items:center;
+    padding-top:64px;
+  }
+  .avatar{
+    width:180px; height:180px; border-radius:50%;
+    background:conic-gradient(from 220deg, var(--blue), var(--cyan), var(--blue-deep), var(--blue));
+    padding:4px;
+    position:relative;
+  }
+  .avatar::before{
+    content:'';
+    position:absolute; inset:4px; border-radius:50%;
+    background:var(--panel);
+  }
+  .avatar span{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:56px; font-weight:700;
+    color:var(--text); z-index:1;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--cyan);
+    letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{
+    content:''; width:8px; height:8px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 8px var(--cyan);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .hero h1{
+    font-family:var(--display); font-size:clamp(32px,5vw,52px);
+    font-weight:700; line-height:1.15; margin-bottom:16px;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(90deg,var(--cyan),var(--blue));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.desc{color:var(--muted); font-size:16px; max-width:560px; margin-bottom:24px;}
+  .contact-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .chip{
+    font-family:var(--mono); font-size:13px;
+    display:flex; align-items:center; gap:8px;
+    padding:8px 14px; border:1px solid var(--line);
+    border-radius:100px; color:var(--text);
+    transition:.2s;
+  }
+  .chip:hover{border-color:var(--cyan); background:rgba(77,216,255,.06);}
+  .chip .dot{color:var(--cyan);}
+
+  /* ===== SHOWREEL ===== */
+  .section-head{margin-bottom:36px;}
+  .section-head .tc-label{
+    font-family:var(--mono); font-size:12px; color:var(--cyan); letter-spacing:1px; margin-bottom:8px; display:block;
+  }
+  .section-head h2{font-family:var(--display); font-size:32px; font-weight:600;}
+  .section-head p{color:var(--muted); font-size:15px; margin-top:8px; max-width:520px;}
+
+  .reel{
+    position:relative;
+    aspect-ratio:9/16;
+    max-width:360px;
+    margin:0 auto;
+    border-radius:16px;
+    background:linear-gradient(135deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .reel::before{
+    content:'';
+    position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(77,216,255,.05) 38px, rgba(77,216,255,.05) 40px);
+  }
+  .play-btn{
+    width:76px; height:76px; border-radius:50%;
+    background:rgba(47,111,237,.15);
+    border:1px solid var(--blue);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:.25s;
+    z-index:2;
+  }
+  .play-btn:hover{background:var(--blue); box-shadow:0 0 30px rgba(47,111,237,.5);}
+  .play-btn svg{width:24px; height:24px; margin-left:4px;}
+  .reel-tag{
+    position:absolute; bottom:16px; left:16px;
+    font-family:var(--mono); font-size:12px; color:var(--muted);
+    background:rgba(8,13,24,.6); padding:4px 10px; border-radius:6px;
+  }
+  .reel-tag.dur{left:auto; right:16px;}
+
+  /* ===== PORTFOLIO ===== */
+  .tabs{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px;}
+  .tab{
+    font-family:var(--mono); font-size:13px;
+    padding:9px 16px; border-radius:8px;
+    border:1px solid var(--line); color:var(--muted);
+    cursor:pointer; transition:.2s;
+  }
+  .tab.active, .tab:hover{border-color:var(--cyan); color:var(--text); background:rgba(77,216,255,.06);}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    transition:.25s;
+  }
+  .card:hover{transform:translateY(-4px); border-color:var(--blue);}
+  .card-thumb{
+    aspect-ratio:16/9;
+    background:linear-gradient(135deg,var(--panel-2),#0c1428);
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-thumb .mini-play{
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-thumb .mini-play svg{width:14px;height:14px;}
+  .card-thumb .dur{
+    position:absolute; bottom:8px; right:8px;
+    font-family:var(--mono); font-size:11px;
+    background:rgba(0,0,0,.5); padding:2px 6px; border-radius:4px;
+  }
+  .card-body{padding:16px;}
+  .card-body .cat{font-family:var(--mono); font-size:11px; color:var(--cyan); letter-spacing:.5px;}
+  .card-body h3{font-family:var(--display); font-size:16px; margin-top:6px; font-weight:600;}
+  .card-body p{font-size:13px; color:var(--muted); margin-top:4px;}
+
+  /* ===== SKILLS ===== */
+  .skills-panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:32px;
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  .terminal-head{
+    display:flex; gap:6px; margin-bottom:20px;
+  }
+  .terminal-head span{width:10px;height:10px;border-radius:50%;background:var(--line);}
+  .skill-line{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
+  .skill-line .name{width:180px; color:var(--text); flex-shrink:0;}
+  .skill-line .bar-bg{flex:1; height:6px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .skill-line .bar-fill{height:100%; background:linear-gradient(90deg,var(--blue),var(--cyan)); border-radius:4px;}
+  .skill-line .pct{color:var(--muted); width:40px; text-align:right;}
+
+  .tag-cloud{display:flex; flex-wrap:wrap; gap:8px; margin-top:24px;}
+  .tag{
+    font-family:var(--mono); font-size:12px; color:var(--cyan);
+    border:1px solid var(--blue-deep); padding:6px 12px; border-radius:6px;
+    background:rgba(47,111,237,.08);
+  }
+
+  /* ===== EDUCATION ===== */
+  .edu-row{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:24px 0; border-bottom:1px solid var(--line);
+  }
+  .edu-row:last-child{border-bottom:none;}
+  .edu-row h3{font-family:var(--display); font-size:18px; font-weight:600;}
+  .edu-row p{color:var(--muted); font-size:14px; margin-top:4px;}
+  .edu-row .tc{font-family:var(--mono); font-size:12px; color:var(--cyan);}
+
+  /* ===== CONTACT / FOOTER ===== */
+  .contact-cta{
+    text-align:center;
+    padding:80px 24px;
+    background:linear-gradient(180deg, transparent, rgba(47,111,237,.06));
+    border-top:1px solid var(--line);
+  }
+  .contact-cta h2{font-family:var(--display); font-size:36px; margin-bottom:16px;}
+  .contact-cta p{color:var(--muted); margin-bottom:32px;}
+  .btn-row{display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono); font-size:13px; font-weight:500;
+    padding:14px 28px; border-radius:10px;
+    display:inline-flex; align-items:center; gap:8px;
+    cursor:pointer; transition:.2s;
+  }
+  .btn-primary{background:var(--blue); color:#fff;}
+  .btn-primary:hover{background:var(--blue-deep); box-shadow:0 0 24px rgba(47,111,237,.4);}
+  .btn-ghost{border:1px solid var(--line); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--cyan);}
+  footer{
+    text-align:center; padding:24px; font-family:var(--mono);
+    font-size:11px; color:var(--muted); border-top:1px solid var(--line);
+  }
+
+  /* ===== TOOL ICON MARQUEE ===== */
+  .marquee-wrap{
+    overflow:hidden; border:1px solid var(--line); border-radius:16px;
+    background:var(--panel); padding:24px 0; margin-top:28px; position:relative;
+  }
+  .marquee-wrap::before, .marquee-wrap::after{
+    content:''; position:absolute; top:0; bottom:0; width:60px; z-index:2; pointer-events:none;
+  }
+  .marquee-wrap::before{left:0; background:linear-gradient(90deg, var(--panel), transparent);}
+  .marquee-wrap::after{right:0; background:linear-gradient(270deg, var(--panel), transparent);}
+  .marquee-track{display:flex; gap:16px; padding:0 24px; width:max-content;}
+  .icon-badge{
+    flex:0 0 auto; width:96px; display:flex; flex-direction:column; align-items:center; gap:10px;
+    padding:16px 10px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+  }
+  .icon-badge img{width:30px; height:30px; object-fit:contain;}
+  .icon-badge .fallback{
+    display:none; width:30px; height:30px; border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--cyan)); align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:10px; font-weight:600; color:#fff;
+  }
+  .icon-badge .name{font-family:var(--mono); font-size:10.5px; color:var(--muted); text-align:center; white-space:nowrap;}
+
+  @media(max-width:720px){
+    .hero{grid-template-columns:1fr; text-align:center;}
+    .avatar{margin:0 auto;}
+    .contact-row{justify-content:center;}
+    .grid{grid-template-columns:1fr;}
+    .skill-line .name{width:120px;}
+    section{padding:64px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="nav-progress"><div class="nav-progress-fill" id="progressFill"></div></div>
+
+<nav class="timeline-nav">
+  <div class="timeline-track">
+    <div class="tl-item active" onclick="goTo('home')"><span class="tc">00:00:00</span><span class="lbl">INTRO</span><div class="tick"></div></div>
+    <div class="tl-item" onclick="goTo('reel')"><span class="tc">00:00:12</span><span class="lbl">SHOWREEL</span><div class="tick"></div></div>
+    <div class="tl-item" onclick="goTo('work')"><span class="tc">00:00:34</span><span class="lbl">DỰ ÁN</span><div class="tick"></div></div>
+    <div class="tl-item" onclick="goTo('skills')"><span class="tc">00:01:02</span><span class="lbl">KỸ NĂNG</span><div class="tick"></div></div>
+    <div class="tl-item" onclick="goTo('edu')"><span class="tc">00:01:18</span><span class="lbl">HỌC VẤN</span><div class="tick"></div></div>
+    <div class="tl-item" onclick="goTo('contact')"><span class="tc">00:01:40</span><span class="lbl">LIÊN HỆ</span><div class="tick"></div></div>
+    <a class="tl-item" href="tools.html" style="color:var(--cyan);"><span class="tc">EXTRA</span><span class="lbl">🛠 CÔNG CỤ</span><div class="tick"></div></a>
+  </div>
+</nav>
+
+<section class="hero reveal" id="home">
+  <div class="avatar"><span>MN</span></div>
+  <div>
+    <div class="eyebrow">Đang mở · Sẵn sàng nhận việc</div>
+    <h1>Mình là Minh Nhật —<br><span class="grad">kể chuyện bằng khung hình.</span></h1>
+    <p class="desc">Học IT nhưng mê dựng phim. Mình mang tư duy logic của dân kỹ thuật vào từng bản dựng: nhịp cắt có chủ đích, màu sắc nhất quán, workflow gọn gàng như code sạch. Hiện đang tìm cơ hội đầu tiên trong ngành video editing.</p>
+    <div class="contact-row">
+      <a class="chip" href="mailto:minhnhat.edit@gmail.com"><span class="dot">✉</span> minhnhat.edit@gmail.com</a>
+      <a class="chip" href="tel:0901234567"><span class="dot">☎</span> 090 123 4567</a>
+      <a class="chip" href="#"><span class="dot">f</span> fb.com/minhnhat.edit</a>
+      <a class="chip" href="#"><span class="dot">Z</span> Zalo: 0901234567</a>
+    </div>
+  </div>
+</section>
+
+<section id="reel">
+  <div class="section-head">
+    <span class="tc-label">// 00:00:12</span>
+    <h2>Showreel tổng hợp</h2>
+    <p>30 giây highlight — ghép từ những đoạn cắt mình tự hào nhất trong các dự án gần đây.</p>
+  </div>
+  <div class="reel">
+    <div class="play-btn"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div>
+    <span class="reel-tag">SHOWREEL_2026_FINAL.mp4</span>
+    <span class="reel-tag dur">00:32</span>
+  </div>
+</section>
+
+<section id="work">
+  <div class="section-head">
+    <span class="tc-label">// 00:00:34</span>
+    <h2>Dự án theo ngành</h2>
+    <p>Chọn danh mục để xem các bản dựng phù hợp với từng loại nội dung.</p>
+  </div>
+  <div class="tabs">
+    <div class="tab active">Tất cả</div>
+    <div class="tab">TVC / Quảng cáo</div>
+    <div class="tab">MV Ca nhạc</div>
+    <div class="tab">Vlog / Content</div>
+    <div class="tab">Phim ngắn</div>
+    <div class="tab">Doanh nghiệp</div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">00:45</span></div>
+      <div class="card-body"><span class="cat">TVC / F&B</span><h3>Quảng cáo trà sữa Mộc</h3><p>Dựng nhịp nhanh, màu ấm, tối ưu cho Reels.</p></div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">03:12</span></div>
+      <div class="card-body"><span class="cat">MV Ca nhạc</span><h3>"Lối Về" — Single Indie</h3><p>Color grading tông film, chuyển cảnh theo nhịp trống.</p></div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">08:20</span></div>
+      <div class="card-body"><span class="cat">Vlog / Content</span><h3>Một ngày ở Hội An</h3><p>Kể chuyện tự nhiên, phụ đề động, nhạc nền dẫn dắt cảm xúc.</p></div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">05:50</span></div>
+      <div class="card-body"><span class="cat">Phim ngắn</span><h3>"Khoảng Lặng" — Bài tập tốt nghiệp</h3><p>Dựng theo cấu trúc 3 hồi, sound design tối giản.</p></div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">01:30</span></div>
+      <div class="card-body"><span class="cat">Doanh nghiệp</span><h3>Giới thiệu Startup Edtech</h3><p>Motion graphics đơn giản, giọng đọc rõ ràng, chuyên nghiệp.</p></div>
+    </div>
+    <div class="card">
+      <div class="card-thumb"><div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">02:05</span></div>
+      <div class="card-body"><span class="cat">TVC / Công nghệ</span><h3>App Demo — FinTrack</h3><p>Screen recording + motion graphics thể hiện tính năng app.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="section-head">
+    <span class="tc-label">// 00:01:02</span>
+    <h2>Kỹ năng & công cụ</h2>
+    <p>Nền tảng IT giúp mình học công cụ mới nhanh và tối ưu workflow dựng phim.</p>
+  </div>
+  <div class="skills-panel">
+    <div class="terminal-head"><span></span><span></span><span></span></div>
+    <div class="skill-line"><span class="name">Adobe Premiere Pro</span><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><span class="pct">85%</span></div>
+    <div class="skill-line"><span class="name">After Effects</span><div class="bar-bg"><div class="bar-fill" style="width:65%"></div></div><span class="pct">65%</span></div>
+    <div class="skill-line"><span class="name">DaVinci Resolve</span><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div><span class="pct">60%</span></div>
+    <div class="skill-line"><span class="name">Color Grading</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+    <div class="skill-line"><span class="name">Sound Design</span><div class="bar-bg"><div class="bar-fill" style="width:55%"></div></div><span class="pct">55%</span></div>
+    <div class="tag-cloud">
+      <span class="tag">Photoshop</span>
+      <span class="tag">Motion Graphics</span>
+      <span class="tag">Storyboarding</span>
+      <span class="tag">Python (tự động hóa workflow)</span>
+      <span class="tag">Quản lý file & backup</span>
+    </div>
+  </div>
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+</section>
+
+<section id="edu">
+  <div class="section-head">
+    <span class="tc-label">// 00:01:18</span>
+    <h2>Học vấn</h2>
+  </div>
+  <div class="edu-row">
+    <div>
+      <h3>Trường Đại học [Tên trường]</h3>
+      <p>Ngành: Công nghệ thông tin</p>
+    </div>
+    <span class="tc">2022 — 2026</span>
+  </div>
+  <div class="edu-row">
+    <div>
+      <h3>Khóa học Dựng phim chuyên sâu</h3>
+      <p>[Tên trung tâm / khóa online] — Premiere & After Effects</p>
+    </div>
+    <span class="tc">2025</span>
+  </div>
+</section>
+
+<section class="contact-cta" id="contact">
+  <span class="tc-label">// 00:01:40</span>
+  <h2>Cùng làm việc chứ?</h2>
+  <p>Mình luôn sẵn sàng nhận dự án mới hoặc một cuộc trò chuyện ngắn về công việc.</p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="mailto:minhnhat.edit@gmail.com">Gửi email cho mình</a>
+    <a class="btn btn-ghost" href="#">Tải CV (PDF)</a>
+  </div>
+</section>
+
+<footer>© 2026 MINH NHẬT — VIDEO EDITOR PORTFOLIO · DỰNG BẰNG ĐAM MÊ</footer>
+
+<script>
+  function goTo(id){
+    document.getElementById(id).scrollIntoView({behavior:'smooth'});
+    document.querySelectorAll('.tl-item').forEach(el=>el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+  const sections = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.tl-item');
+  const idOrder = ['home','reel','work','skills','edu','contact'];
+  window.addEventListener('scroll', () => {
+    let current = 'home';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 200) current = sec.id;
+    });
+    navItems.forEach((el,i) => el.classList.toggle('active', idOrder[i] === current));
+  });
+  const progressFill = document.getElementById('progressFill');
+  window.addEventListener('scroll', () => {
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrolled = (window.scrollY / docHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+  });
+
+  /* ===== SCROLL REVEAL (Intersection Observer) ===== */
+  const observerOptions = { threshold:0.15, rootMargin:'0px 0px -80px 0px' };
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) entry.target.classList.add('in-view');
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ===== RESPONSIVE NAV (timeline scrolls on mobile) ===== */
+  const track = document.querySelector('.timeline-track');
+  if(window.innerWidth < 768 && track){
+    const navItems = document.querySelectorAll('.tl-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        const scrollAmount = item.offsetLeft - track.offsetWidth/3;
+        track.scrollTo({ left:scrollAmount, behavior:'smooth' });
+      });
+    });
+  }
+
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  /* ================= DẢI ICON CÔNG CỤ (marquee) ================= */
+  (function(){
+    const track = document.getElementById('marqueeTrack');
+    const TOOLS = [
+      { name:'GitHub', slug:'github', init:'GH' },
+      { name:'ChatGPT', slug:'openai', init:'GPT' },
+      { name:'Gemini', slug:'googlegemini', init:'GM' },
+      { name:'Google Flow', slug:'', init:'FLOW' },
+      { name:'ElevenLabs', slug:'elevenlabs', init:'11L' },
+      { name:'VS Code', slug:'visualstudiocode', init:'VS' },
+      { name:'CapCut', slug:'capcut', init:'CC' },
+      { name:'Premiere Pro', slug:'adobepremierepro', init:'PR' },
+      { name:'DaVinci Resolve', slug:'davinciresolve', init:'DR' }
+    ];
+
+    function makeBadge(tool){
+      const el = document.createElement('div');
+      el.className = 'icon-badge';
+      const imgHtml = tool.slug
+        ? `<img src="https://cdn.simpleicons.org/${tool.slug}/ffffff" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
+        : `<img src="" style="display:none;">`;
+      el.innerHTML = `
+        ${imgHtml}
+        <span class="fallback" style="${tool.slug ? '' : 'display:flex;'}">${tool.init}</span>
+        <span class="name">${tool.name}</span>
+      `;
+      return el;
+    }
+
+    const fullList = [...TOOLS, ...TOOLS];
+    fullList.forEach(tool => track.appendChild(makeBadge(tool)));
+
+    let position = 0, step = 0, singleSetWidth = 0;
+
+    function measure(){
+      const firstCard = track.children[0];
+      const cardWidth = firstCard.getBoundingClientRect().width;
+      const gap = 16;
+      step = cardWidth + gap;
+      singleSetWidth = step * TOOLS.length;
+      position = -singleSetWidth;
+      track.style.transition = 'none';
+      track.style.transform = `translateX(${position}px)`;
+    }
+
+    window.addEventListener('load', measure);
+    window.addEventListener('resize', measure);
+
+    setInterval(()=>{
+      position += step;
+      track.style.transition = 'transform .6s ease';
+      track.style.transform = `translateX(${position}px)`;
+      if(position >= 0){
+        setTimeout(()=>{
+          track.style.transition = 'none';
+          position = -singleSetWidth;
+          track.style.transform = `translateX(${position}px)`;
+        }, 600);
+      }
+    }, 1500);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Minh Nhật Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#5B5FFF;
+    --primary-light:#8B8FFF;
+    --danger:#FF4757;
+    --success:#2ED573;
+    --warning:#FFA502;
+    --bg:#F5F6FA;
+    --surface:#FFFFFF;
+    --text:#333333;
+    --muted:#8B92A9;
+    --border:#E8EBEF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;}
+  a{color:inherit;text-decoration:none;}
+
+  .header{
+    background:linear-gradient(135deg, var(--primary), var(--primary-light));
+    color:#fff;
+    padding:20px 32px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+  }
+  .header h1{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;}
+  .header .btn-logout{
+    background:rgba(255,255,255,.2);
+    border:1px solid rgba(255,255,255,.3);
+    color:#fff;
+    padding:8px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .header .btn-logout:hover{background:rgba(255,255,255,.3);}
+
+  .container{max-width:1200px;margin:0 auto;padding:32px 20px;}
+
+  .tabs{
+    display:flex;
+    gap:12px;
+    border-bottom:2px solid var(--border);
+    margin-bottom:32px;
+    overflow-x:auto;
+  }
+  .tab{
+    padding:12px 20px;
+    cursor:pointer;
+    border:none;
+    background:none;
+    font-size:15px;
+    font-weight:500;
+    color:var(--muted);
+    border-bottom:3px solid transparent;
+    transition:.2s;
+  }
+  .tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+  .tab:hover{color:var(--text);}
+
+  .tab-content{display:none;}
+  .tab-content.active{display:block;}
+
+  .form-group{margin-bottom:24px;}
+  .form-group label{display:block;margin-bottom:8px;font-weight:500;color:var(--text);}
+  input[type=text], input[type=email], input[type=password], textarea, select{
+    width:100%;
+    padding:10px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-family:inherit;
+    font-size:14px;
+    background:var(--surface);
+  }
+  input:focus, textarea:focus, select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,95,255,.1);}
+  textarea{min-height:100px;resize:vertical;}
+
+  .upload-area{
+    border:2px dashed var(--border);
+    border-radius:8px;
+    padding:32px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .upload-area:hover{border-color:var(--primary);background:rgba(91,95,255,.02);}
+  .upload-area.drag{border-color:var(--primary);background:rgba(91,95,255,.05);}
+  .upload-area input{display:none;}
+  .upload-area p{color:var(--muted);font-size:14px;}
+  .upload-area strong{color:var(--primary);}
+
+  .preview-thumb{
+    margin-top:12px;
+    max-width:200px;
+    border-radius:8px;
+    object-fit:cover;
+  }
+
+  .btn{
+    padding:10px 20px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    font-weight:500;
+    transition:.2s;
+    font-size:14px;
+  }
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:#4A4ECC;box-shadow:0 4px 12px rgba(91,95,255,.3);}
+  .btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text);}
+  .btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .btn-danger:hover{background:#E63946;}
+  .btn-success{background:var(--success);color:#fff;}
+  .btn-success:hover{background:#26C463;}
+  .btn-warning{background:var(--warning);color:#fff;}
+
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
+
+  .table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .table th{background:var(--bg);padding:12px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);}
+  .table td{padding:12px;border-bottom:1px solid var(--border);}
+  .table tr:hover{background:rgba(91,95,255,.02);}
+  .table img{max-width:60px;border-radius:6px;}
+
+  .actions{display:flex;gap:6px;}
+  .actions button{padding:6px 12px;font-size:12px;}
+
+  .loading{display:none;text-align:center;color:var(--muted);}
+  .loading.show{display:block;}
+
+  .toast{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    padding:12px 20px;
+    border-radius:8px;
+    color:#fff;
+    opacity:0;
+    transform:translateY(20px);
+    transition:.3s;
+    z-index:1000;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast.success{background:var(--success);}
+  .toast.error{background:var(--danger);}
+  .toast.warning{background:var(--warning);}
+
+  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+  .modal.show{display:flex;}
+  .modal-content{background:var(--surface);border-radius:8px;padding:32px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .modal-header h2{font-family:'Space Grotesk',sans-serif;}
+  .modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎬 Admin Panel — Quản lý Nội dung</h1>
+  <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
+</div>
+
+<!-- LOGIN FORM -->
+<div id="loginScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div class="container" style="max-width:400px;">
+    <h2 style="text-align:center;margin-bottom:32px;font-family:'Space Grotesk',sans-serif;">Đăng nhập Admin</h2>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="emailInput" placeholder="admin@example.com">
+    </div>
+    <div class="form-group">
+      <label>Mật khẩu</label>
+      <input type="password" id="passwordInput" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" style="width:100;" id="loginBtn">Đăng nhập</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL (hidden by default) -->
+<div id="adminPanel" style="display:none;">
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" data-tab="projects">📹 Video Dự án</button>
+      <button class="tab" data-tab="showreel">⭐ Showreel</button>
+      <button class="tab" data-tab="avatar">👤 Avatar</button>
+      <button class="tab" data-tab="categories">🏷️ Danh sách chuyên ngành</button>
+    </div>
+
+    <!-- TAB: VIDEO DỰ ÁN -->
+    <div id="projects" class="tab-content active">
+      <h2>Quản lý Video Dự án</h2>
+      <form id="projectForm" style="margin:24px 0;padding:24px;background:#fff;border-radius:8px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tên dự án *</label>
+            <input type="text" id="projectName" required>
+          </div>
+          <div class="form-group">
+            <label>Chuyên ngành *</label>
+            <select id="projectCategory" required>
+              <option value="">-- Chọn chuyên ngành --</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Mô tả</label>
+          <textarea id="projectDesc" placeholder="Mô tả ngắn về dự án..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>URL Video (YouTube/Vimeo)</label>
+          <input type="text" id="projectURL" placeholder="https://youtube.com/watch?v=...">
+        </div>
+        <div class="form-group">
+          <label>Thumbnail (hoặc tải video để tạo)</label>
+          <div class="upload-area" id="thumbUpload">
+            <input type="file" id="thumbFile" accept="image/*">
+            <p>Kéo thả hình ảnh hoặc <strong>bấm để chọn</strong></p>
+          </div>
+          <img id="thumbPreview" class="preview-thumb" style="display:none;">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="submit" class="btn btn-primary">Thêm Video</button>
+          <button type="button" class="btn btn-secondary" id="cancelProject" style="display:none;">Hủy</button>
+        </div>
+      </form>
+
+      <table class="table" id="projectsTable">
+        <thead>
+          <tr><th>Tên dự án</th><th>Chuyên ngành</th><th>Thumbnail</th><th>Hành động</th></tr>
+        </thead>
+        <tbody id="projectsTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- TAB: SHOWREEL -->
+    <div id="showreel" class="tab-content">
+      <h2>Cập nhật Showreel</h2>
+      <div style="padding:24px;background:#fff;border-radius:8px;">
+        <div class="form-group">
+          <label>URL Video Showreel (YouTube/Vimeo) *</label>
+          <input type="text" id="showreelURL" placeholder="https://youtube.com/watch?v=...">
+        </div>
+        <button class="btn btn-primary" id="saveShowreel">Lưu Showreel</button>
+      </div>
+    </div>
+
+    <!-- TAB: AVATAR -->
+    <div id="avatar" class="tab-content">
+      <h2>Cập nhật Avatar</h2>
+      <div style="padding:24px;background:#fff;border-radius:8px;">
+        <div class="form-group">
+          <label>Ảnh Avatar *</label>
+          <div class="upload-area" id="avatarUpload">
+            <input type="file" id="avatarFile" accept="image/*">
+            <p>Kéo thả ảnh hoặc <strong>bấm để chọn</strong></p>
+          </div>
+          <img id="avatarPreview" class="preview-thumb" style="display:none;max-width:150px;border-radius:50%;">
+        </div>
+        <button class="btn btn-primary" id="saveAvatar">Lưu Avatar</button>
+      </div>
+    </div>
+
+    <!-- TAB: DANH SÁCH CHUYÊN NGÀNH -->
+    <div id="categories" class="tab-content">
+      <h2>Quản lý Danh sách chuyên ngành</h2>
+      <div style="padding:24px;background:#fff;border-radius:8px;margin-bottom:24px;">
+        <div class="form-group">
+          <label>Tên chuyên ngành *</label>
+          <input type="text" id="catName" placeholder="Ví dụ: TVC / Quảng cáo">
+        </div>
+        <div class="form-group">
+          <label>Icon/Emoji</label>
+          <input type="text" id="catEmoji" placeholder="📺" value="📺">
+        </div>
+        <button class="btn btn-primary" id="addCategory">Thêm chuyên ngành</button>
+      </div>
+
+      <table class="table" id="categoriesTable">
+        <thead>
+          <tr><th>Tên</th><th>Icon</th><th>Hành động</th></tr>
+        </thead>
+        <tbody id="categoriesTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCBdXaVp9oL-_sOd0gj0iGsZK2fCVrbw3M",
+  authDomain: "profilehunnglee203.firebaseapp.com",
+  projectId: "profilehunnglee203",
+  storageBucket: "profilehunnglee203.firebasestorage.app",
+  messagingSenderId: "982204348754",
+  appId: "1:982204348754:web:dc45ab41c0005f9eaa228b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const cloudinaryCloud = 'dfs1bwlez';
+const cloudinaryPreset = 'videoprofile';
+
+// ===== UI ELEMENTS =====
+const loginScreen = document.getElementById('loginScreen');
+const adminPanel = document.getElementById('adminPanel');
+const emailInput = document.getElementById('emailInput');
+const passwordInput = document.getElementById('passwordInput');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const toast = document.getElementById('toast');
+
+// ===== AUTHENTICATION =====
+onAuthStateChanged(auth, (user) => {
+  if(user){
+    loginScreen.style.display = 'none';
+    adminPanel.style.display = 'block';
+    loadAllData();
+  }else{
+    loginScreen.style.display = 'flex';
+    adminPanel.style.display = 'none';
+  }
+});
+
+loginBtn.addEventListener('click', async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  if(!email || !password) return showToast('Vui lòng nhập email và mật khẩu', 'error');
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+  }catch(e){
+    showToast('Đăng nhập thất bại: ' + e.message, 'error');
+  }
+});
+
+logoutBtn.addEventListener('click', () => {
+  signOut(auth);
+});
+
+function showToast(msg, type = 'success'){
+  toast.textContent = msg;
+  toast.className = 'toast show ' + type;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ===== CLOUDINARY UPLOAD =====
+async function uploadToCloudinary(file, resourceType = 'auto'){
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', cloudinaryPreset);
+  try{
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloud}/${resourceType === 'video' ? 'video' : 'image'}/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if(data.secure_url) return data.secure_url;
+    throw new Error(data.error?.message || 'Upload failed');
+  }catch(e){
+    showToast('Upload lỗi: ' + e.message, 'error');
+    return null;
+  }
+}
+
+// ===== PROJECTS (VIDEO DỰ ÁN) =====
+const projectForm = document.getElementById('projectForm');
+const projectsTableBody = document.getElementById('projectsTableBody');
+const projectCatSelect = document.getElementById('projectCategory');
+
+projectForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('projectName').value.trim();
+  const cat = document.getElementById('projectCategory').value;
+  const desc = document.getElementById('projectDesc').value.trim();
+  const url = document.getElementById('projectURL').value.trim();
+  const thumbFile = document.getElementById('thumbFile').files[0];
+
+  if(!name || !cat) return showToast('Vui lòng nhập tên và chọn chuyên ngành', 'error');
+
+  let thumbURL = '';
+  if(thumbFile) thumbURL = await uploadToCloudinary(thumbFile, 'image');
+
+  try{
+    await addDoc(collection(db, 'projects'), {
+      name, category: cat, description: desc, videoURL: url, thumbnail: thumbURL, createdAt: new Date()
+    });
+    showToast('Thêm video thành công', 'success');
+    projectForm.reset();
+    document.getElementById('thumbPreview').style.display = 'none';
+    loadProjects();
+  }catch(e){
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+});
+
+async function loadProjects(){
+  try{
+    const snap = await getDocs(collection(db, 'projects'));
+    projectsTableBody.innerHTML = '';
+    snap.forEach(doc => {
+      const data = doc.data();
+      projectsTableBody.innerHTML += `
+        <tr>
+          <td>${data.name}</td>
+          <td>${data.category}</td>
+          <td>${data.thumbnail ? `<img src="${data.thumbnail}" style="max-width:60px;border-radius:6px;">` : '-'}</td>
+          <td class="actions">
+            <button class="btn btn-danger btn-sm" onclick="deleteProject('${doc.id}')">Xoá</button>
+          </td>
+        </tr>
+      `;
+    });
+  }catch(e){
+    showToast('Lỗi tải dữ liệu: ' + e.message, 'error');
+  }
+}
+
+window.deleteProject = async (docId) => {
+  if(!confirm('Xác nhận xoá?')) return;
+  try{
+    await deleteDoc(doc(db, 'projects', docId));
+    showToast('Đã xoá', 'success');
+    loadProjects();
+  }catch(e){
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+};
+
+// ===== SHOWREEL =====
+document.getElementById('saveShowreel').addEventListener('click', async () => {
+  const url = document.getElementById('showreelURL').value.trim();
+  if(!url) return showToast('Vui lòng nhập URL', 'error');
+  try{
+    await setDoc(doc(db, 'profile', 'showreel'), { url, updatedAt: new Date() });
+    showToast('Cập nhật showreel thành công', 'success');
+  }catch(e){
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+});
+
+// ===== AVATAR =====
+const avatarUpload = document.getElementById('avatarUpload');
+const avatarFile = document.getElementById('avatarFile');
+const avatarPreview = document.getElementById('avatarPreview');
+
+avatarUpload.addEventListener('click', () => avatarFile.click());
+avatarFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      avatarPreview.src = evt.target.result;
+      avatarPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+document.getElementById('saveAvatar').addEventListener('click', async () => {
+  if(!avatarFile.files[0]) return showToast('Chọn ảnh trước', 'error');
+  const url = await uploadToCloudinary(avatarFile.files[0], 'image');
+  if(url){
+    try{
+      await setDoc(doc(db, 'profile', 'avatar'), { url, updatedAt: new Date() });
+      showToast('Cập nhật avatar thành công', 'success');
+    }catch(e){
+      showToast('Lỗi: ' + e.message, 'error');
+    }
+  }
+});
+
+// ===== CATEGORIES =====
+const categoriesTableBody = document.getElementById('categoriesTableBody');
+
+document.getElementById('addCategory').addEventListener('click', async () => {
+  const name = document.getElementById('catName').value.trim();
+  const emoji = document.getElementById('catEmoji').value.trim() || '📺';
+  if(!name) return showToast('Vui lòng nhập tên chuyên ngành', 'error');
+  try{
+    await addDoc(collection(db, 'categories'), { name, emoji, createdAt: new Date() });
+    showToast('Thêm chuyên ngành thành công', 'success');
+    document.getElementById('catName').value = '';
+    loadCategories();
+  }catch(e){
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+});
+
+async function loadCategories(){
+  try{
+    const snap = await getDocs(collection(db, 'categories'));
+    categoriesTableBody.innerHTML = '';
+    const options = ['<option value="">-- Chọn chuyên ngành --</option>'];
+    snap.forEach(doc => {
+      const data = doc.data();
+      const name = data.name;
+      options.push(`<option value="${name}">${name}</option>`);
+      categoriesTableBody.innerHTML += `
+        <tr>
+          <td>${name}</td>
+          <td>${data.emoji}</td>
+          <td class="actions">
+            <button class="btn btn-danger btn-sm" onclick="deleteCategory('${doc.id}')">Xoá</button>
+          </td>
+        </tr>
+      `;
+    });
+    projectCatSelect.innerHTML = options.join('');
+  }catch(e){
+    showToast('Lỗi tải categories: ' + e.message, 'error');
+  }
+}
+
+window.deleteCategory = async (docId) => {
+  if(!confirm('Xác nhận xoá?')) return;
+  try{
+    await deleteDoc(doc(db, 'categories', docId));
+    showToast('Đã xoá', 'success');
+    loadCategories();
+  }catch(e){
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+};
+
+// ===== TAB SWITCHING =====
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ===== DRAG & DROP ===== 
+['thumbUpload', 'avatarUpload'].forEach(id => {
+  const area = document.getElementById(id);
+  ['dragover','dragleave','drop'].forEach(evt => {
+    area.addEventListener(evt, (e) => {
+      e.preventDefault();
+      if(evt === 'dragover') area.classList.add('drag');
+      if(evt === 'dragleave') area.classList.remove('drag');
+      if(evt === 'drop'){
+        area.classList.remove('drag');
+        const files = e.dataTransfer.files;
+        if(files[0]) area.querySelector('input').files = files;
+      }
+    });
+  });
+});
+
+function loadAllData(){
+  loadProjects();
+  loadCategories();
+}
+</script>
+</body>
+</html>
