@@ -97,6 +97,13 @@
   .upload-area input{display:none;}
   .upload-area p{color:var(--muted);font-size:14px;}
   .upload-area strong{color:var(--primary);}
+  .upload-status{margin-top:10px;font-size:13px;color:var(--primary);font-weight:600;display:none;}
+  .upload-status.show{display:block;}
+  .upload-file-name{margin-top:8px;font-size:13px;color:var(--muted);display:none;}
+  .upload-file-name.show{display:block;}
+  .upload-progress{margin-top:8px;height:6px;border-radius:999px;background:var(--border);overflow:hidden;display:none;}
+  .upload-progress.show{display:block;}
+  .upload-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary-light));transition:width .2s ease;}
 
   .preview-thumb{
     margin-top:12px;
@@ -214,20 +221,15 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Mô tả</label>
-          <textarea id="projectDesc" placeholder="Mô tả ngắn về dự án..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>URL Video (YouTube/Vimeo)</label>
-          <input type="text" id="projectURL" placeholder="https://youtube.com/watch?v=...">
-        </div>
-        <div class="form-group">
-          <label>Thumbnail (hoặc tải video để tạo)</label>
-          <div class="upload-area" id="thumbUpload">
-            <input type="file" id="thumbFile" accept="image/*">
-            <p>Kéo thả hình ảnh hoặc <strong>bấm để chọn</strong></p>
+          <label>Video/Ảnh dự án (tệp hoặc URL)</label>
+          <div class="upload-area" id="projectVideoUpload">
+            <input type="file" id="projectVideoFile" accept="image/*,video/*">
+            <p>Kéo thả ảnh/video hoặc <strong>bấm để chọn</strong></p>
           </div>
-          <img id="thumbPreview" class="preview-thumb" style="display:none;">
+          <div class="upload-file-name" id="projectFileName">Chưa có file nào được chọn</div>
+          <div class="upload-progress" id="projectUploadProgress"><div class="upload-progress-bar"></div></div>
+          <div class="upload-status" id="projectUploadStatus">Đang chờ chọn video...</div>
+          <input type="text" id="projectURL" placeholder="Hoặc dán link YouTube/Vimeo/Cloudinary" style="margin-top:12px;">
         </div>
         <div style="display:flex;gap:10px;">
           <button type="submit" class="btn btn-primary">Thêm Video</button>
@@ -248,8 +250,15 @@
       <h2>Cập nhật Showreel</h2>
       <div style="padding:24px;background:#fff;border-radius:8px;">
         <div class="form-group">
-          <label>URL Video Showreel (YouTube/Vimeo) *</label>
-          <input type="text" id="showreelURL" placeholder="https://youtube.com/watch?v=...">
+          <label>Video Showreel (tệp từ máy hoặc URL)</label>
+          <div class="upload-area" id="showreelVideoUpload">
+            <input type="file" id="showreelVideoFile" accept="video/*">
+            <p>Kéo thả video hoặc <strong>bấm để chọn</strong></p>
+          </div>
+          <div class="upload-file-name" id="showreelFileName">Chưa có file nào được chọn</div>
+          <div class="upload-progress" id="showreelUploadProgress"><div class="upload-progress-bar"></div></div>
+          <div class="upload-status" id="showreelUploadStatus">Đang chờ chọn video...</div>
+          <input type="text" id="showreelURL" placeholder="Hoặc dán link Cloudinary / YouTube / Vimeo" style="margin-top:12px;">
         </div>
         <button class="btn btn-primary" id="saveShowreel">Lưu Showreel</button>
       </div>
@@ -280,8 +289,28 @@
           <input type="text" id="catName" placeholder="Ví dụ: TVC / Quảng cáo">
         </div>
         <div class="form-group">
-          <label>Icon/Emoji</label>
-          <input type="text" id="catEmoji" placeholder="📺" value="📺">
+          <label>Icon</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-weight:500;">
+              <input type="radio" name="catIconType" value="emoji" checked>
+              Emoji
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:500;">
+              <input type="radio" name="catIconType" value="image">
+              Ảnh
+            </label>
+          </div>
+          <input type="text" id="catEmoji" placeholder="📺" value="📺" style="margin-bottom:10px;">
+          <div id="catIconUploadWrap" style="display:none;">
+            <div class="upload-area" id="catIconUpload">
+              <input type="file" id="catIconFile" accept="image/*">
+              <p>Kéo thả ảnh icon hoặc <strong>bấm để chọn</strong></p>
+            </div>
+            <div class="upload-file-name" id="catIconFileName">Chưa có file nào được chọn</div>
+            <div class="upload-progress" id="catIconUploadProgress"><div class="upload-progress-bar"></div></div>
+            <div class="upload-status" id="catIconUploadStatus">Đang chờ chọn icon...</div>
+            <img id="catIconPreview" class="preview-thumb" style="display:none;max-width:120px;">
+          </div>
         </div>
         <button class="btn btn-primary" id="addCategory">Thêm chuyên ngành</button>
       </div>
@@ -361,20 +390,51 @@ function showToast(msg, type = 'success'){
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+function setUploadStatus(id, message, isVisible = true){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = message;
+  el.classList.toggle('show', isVisible);
+}
+
+function setUploadProgress(id, percent){
+  const wrap = document.getElementById(id);
+  const bar = wrap?.querySelector('.upload-progress-bar');
+  if(!wrap || !bar) return;
+  wrap.classList.toggle('show', percent > 0 && percent < 100);
+  bar.style.width = percent + '%';
+}
+
+function setSelectedFileName(id, fileName){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = fileName ? `Đã chọn: ${fileName}` : 'Chưa có file nào được chọn';
+  el.classList.toggle('show', Boolean(fileName));
+}
+
 // ===== CLOUDINARY UPLOAD =====
-async function uploadToCloudinary(file, resourceType = 'auto'){
+async function uploadToCloudinary(file, resourceType = 'auto', statusId = '', progressId = ''){
+  if(statusId) setUploadStatus(statusId, 'Đang upload...');
+  if(progressId) setUploadProgress(progressId, 10);
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', cloudinaryPreset);
   try{
+    if(progressId) setUploadProgress(progressId, 40);
     const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloud}/${resourceType === 'video' ? 'video' : 'image'}/upload`, {
       method: 'POST',
       body: formData
     });
     const data = await res.json();
-    if(data.secure_url) return data.secure_url;
+    if(progressId) setUploadProgress(progressId, 100);
+    if(data.secure_url) {
+      if(statusId) setUploadStatus(statusId, 'Upload thành công', true);
+      return data.secure_url;
+    }
     throw new Error(data.error?.message || 'Upload failed');
   }catch(e){
+    if(progressId) setUploadProgress(progressId, 0);
+    if(statusId) setUploadStatus(statusId, 'Upload thất bại', true);
     showToast('Upload lỗi: ' + e.message, 'error');
     return null;
   }
@@ -384,27 +444,63 @@ async function uploadToCloudinary(file, resourceType = 'auto'){
 const projectForm = document.getElementById('projectForm');
 const projectsTableBody = document.getElementById('projectsTableBody');
 const projectCatSelect = document.getElementById('projectCategory');
+const projectVideoInput = document.getElementById('projectVideoFile');
+
+projectVideoInput.addEventListener('change', () => {
+  const file = projectVideoInput.files[0];
+  setSelectedFileName('projectFileName', file ? file.name : '');
+  if(file){
+    setUploadStatus('projectUploadStatus', 'Đang chờ upload...', true);
+    setUploadProgress('projectUploadProgress', 0);
+  } else {
+    setUploadStatus('projectUploadStatus', 'Đang chờ chọn video...', false);
+    setUploadProgress('projectUploadProgress', 0);
+  }
+});
 
 projectForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('projectName').value.trim();
   const cat = document.getElementById('projectCategory').value;
-  const desc = document.getElementById('projectDesc').value.trim();
   const url = document.getElementById('projectURL').value.trim();
-  const thumbFile = document.getElementById('thumbFile').files[0];
+  const mediaFile = document.getElementById('projectVideoFile').files[0];
 
   if(!name || !cat) return showToast('Vui lòng nhập tên và chọn chuyên ngành', 'error');
 
-  let thumbURL = '';
-  if(thumbFile) thumbURL = await uploadToCloudinary(thumbFile, 'image');
+  let videoURL = '';
+  let imageURL = '';
+  let mediaType = '';
+  if(mediaFile) {
+    setSelectedFileName('projectFileName', mediaFile.name);
+    const isImage = mediaFile.type.startsWith('image/');
+    mediaType = isImage ? 'image' : 'video';
+    const uploadedUrl = await uploadToCloudinary(mediaFile, mediaType, 'projectUploadStatus', 'projectUploadProgress');
+    if(isImage){
+      imageURL = uploadedUrl;
+    }else{
+      videoURL = uploadedUrl;
+    }
+  }
+  if(!videoURL && !imageURL) videoURL = url;
+  if(!videoURL && !imageURL) return showToast('Vui lòng chọn ảnh/video hoặc nhập URL', 'error');
 
   try{
     await addDoc(collection(db, 'projects'), {
-      name, category: cat, description: desc, videoURL: url, thumbnail: thumbURL, createdAt: new Date()
+      name,
+      category: cat,
+      videoURL: videoURL,
+      videoUrl: videoURL,
+      imageURL: imageURL,
+      imageUrl: imageURL,
+      thumbnail: imageURL || videoURL,
+      mediaType,
+      createdAt: new Date()
     });
-    showToast('Thêm video thành công', 'success');
+    showToast(cat === 'Design' ? 'Thêm ảnh thiết kế thành công' : 'Thêm video thành công', 'success');
     projectForm.reset();
-    document.getElementById('thumbPreview').style.display = 'none';
+    setUploadStatus('projectUploadStatus', 'Đang chờ chọn video...', false);
+    setUploadProgress('projectUploadProgress', 0);
+    setSelectedFileName('projectFileName', '');
     loadProjects();
   }catch(e){
     showToast('Lỗi: ' + e.message, 'error');
@@ -421,7 +517,7 @@ async function loadProjects(){
         <tr>
           <td>${data.name}</td>
           <td>${data.category}</td>
-          <td>${data.thumbnail ? `<img src="${data.thumbnail}" style="max-width:60px;border-radius:6px;">` : '-'}</td>
+          <td>${data.imageURL ? '<span style="color:#2ED573;">Có ảnh</span>' : data.videoURL ? '<span style="color:#2ED573;">Có video</span>' : '-'}</td>
           <td class="actions">
             <button class="btn btn-danger btn-sm" onclick="deleteProject('${doc.id}')">Xoá</button>
           </td>
@@ -445,12 +541,40 @@ window.deleteProject = async (docId) => {
 };
 
 // ===== SHOWREEL =====
+const showreelVideoInput = document.getElementById('showreelVideoFile');
+showreelVideoInput.addEventListener('change', () => {
+  const file = showreelVideoInput.files[0];
+  setSelectedFileName('showreelFileName', file ? file.name : '');
+  if(file){
+    setUploadStatus('showreelUploadStatus', 'Đang chờ upload...', true);
+    setUploadProgress('showreelUploadProgress', 0);
+  } else {
+    setUploadStatus('showreelUploadStatus', 'Đang chờ chọn video...', false);
+    setUploadProgress('showreelUploadProgress', 0);
+  }
+});
+
 document.getElementById('saveShowreel').addEventListener('click', async () => {
   const url = document.getElementById('showreelURL').value.trim();
-  if(!url) return showToast('Vui lòng nhập URL', 'error');
+  const videoFile = document.getElementById('showreelVideoFile').files[0];
+
+  if(!videoFile && !url) return showToast('Vui lòng chọn video từ máy hoặc nhập URL', 'error');
+
+  let finalUrl = url;
+  if(videoFile) {
+    setSelectedFileName('showreelFileName', videoFile.name);
+    finalUrl = await uploadToCloudinary(videoFile, 'video', 'showreelUploadStatus', 'showreelUploadProgress');
+  }
+  if(!finalUrl) return;
+
   try{
-    await setDoc(doc(db, 'profile', 'showreel'), { url, updatedAt: new Date() });
+    await setDoc(doc(db, 'profile', 'showreel'), { url: finalUrl, updatedAt: new Date() });
     showToast('Cập nhật showreel thành công', 'success');
+    document.getElementById('showreelURL').value = '';
+    document.getElementById('showreelVideoFile').value = '';
+    setUploadStatus('showreelUploadStatus', 'Đang chờ chọn video...', false);
+    setUploadProgress('showreelUploadProgress', 0);
+    setSelectedFileName('showreelFileName', '');
   }catch(e){
     showToast('Lỗi: ' + e.message, 'error');
   }
@@ -489,15 +613,67 @@ document.getElementById('saveAvatar').addEventListener('click', async () => {
 
 // ===== CATEGORIES =====
 const categoriesTableBody = document.getElementById('categoriesTableBody');
+const catIconUpload = document.getElementById('catIconUpload');
+const catIconFile = document.getElementById('catIconFile');
+const catIconPreview = document.getElementById('catIconPreview');
+const catIconUploadWrap = document.getElementById('catIconUploadWrap');
+const catIconTypeRadios = document.querySelectorAll('input[name="catIconType"]');
+
+catIconTypeRadios.forEach(radio => {
+  radio.addEventListener('change', () => {
+    const useImage = radio.value === 'image';
+    catIconUploadWrap.style.display = useImage ? 'block' : 'none';
+    if (!useImage) {
+      catIconFile.value = '';
+      catIconPreview.style.display = 'none';
+      setUploadStatus('catIconUploadStatus', 'Đang chờ chọn icon...', false);
+      setUploadProgress('catIconUploadProgress', 0);
+      setSelectedFileName('catIconFileName', '');
+    }
+  });
+});
+
+catIconUpload.addEventListener('click', () => catIconFile.click());
+catIconFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  setSelectedFileName('catIconFileName', file ? file.name : '');
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      catIconPreview.src = evt.target.result;
+      catIconPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    setUploadStatus('catIconUploadStatus', 'Đang chờ upload...', true);
+    setUploadProgress('catIconUploadProgress', 0);
+  } else {
+    catIconPreview.style.display = 'none';
+    setUploadStatus('catIconUploadStatus', 'Đang chờ chọn icon...', false);
+    setUploadProgress('catIconUploadProgress', 0);
+  }
+});
 
 document.getElementById('addCategory').addEventListener('click', async () => {
   const name = document.getElementById('catName').value.trim();
-  const emoji = document.getElementById('catEmoji').value.trim() || '📺';
+  const selectedType = document.querySelector('input[name="catIconType"]:checked')?.value || 'emoji';
+  const emoji = selectedType === 'emoji' ? (document.getElementById('catEmoji').value.trim() || '📺') : '📺';
   if(!name) return showToast('Vui lòng nhập tên chuyên ngành', 'error');
   try{
-    await addDoc(collection(db, 'categories'), { name, emoji, createdAt: new Date() });
+    let iconUrl = '';
+    if(selectedType === 'image' && catIconFile.files[0]) {
+      iconUrl = await uploadToCloudinary(catIconFile.files[0], 'image', 'catIconUploadStatus', 'catIconUploadProgress');
+    }
+    await addDoc(collection(db, 'categories'), { name, emoji, iconUrl, createdAt: new Date() });
     showToast('Thêm chuyên ngành thành công', 'success');
     document.getElementById('catName').value = '';
+    document.getElementById('catEmoji').value = '📺';
+    document.querySelector('input[name="catIconType"][value="emoji"]').checked = true;
+    catIconUploadWrap.style.display = 'none';
+    catIconFile.value = '';
+    catIconPreview.style.display = 'none';
+    setUploadStatus('catIconUploadStatus', 'Đang chờ chọn icon...', false);
+    setUploadProgress('catIconUploadProgress', 0);
+    setSelectedFileName('catIconFileName', '');
     loadCategories();
   }catch(e){
     showToast('Lỗi: ' + e.message, 'error');
@@ -516,7 +692,7 @@ async function loadCategories(){
       categoriesTableBody.innerHTML += `
         <tr>
           <td>${name}</td>
-          <td>${data.emoji}</td>
+          <td>${data.iconUrl ? `<img src="${data.iconUrl}" alt="${name}" style="width:28px;height:28px;border-radius:6px;object-fit:cover;">` : data.emoji}</td>
           <td class="actions">
             <button class="btn btn-danger btn-sm" onclick="deleteCategory('${doc.id}')">Xoá</button>
           </td>
@@ -551,8 +727,11 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 // ===== DRAG & DROP ===== 
-['thumbUpload', 'avatarUpload'].forEach(id => {
+['avatarUpload', 'projectVideoUpload', 'showreelVideoUpload', 'catIconUpload'].forEach(id => {
   const area = document.getElementById(id);
+  if(!area) return;
+  const input = area.querySelector('input');
+  area.addEventListener('click', () => input.click());
   ['dragover','dragleave','drop'].forEach(evt => {
     area.addEventListener(evt, (e) => {
       e.preventDefault();
@@ -561,7 +740,11 @@ document.querySelectorAll('.tab').forEach(tab => {
       if(evt === 'drop'){
         area.classList.remove('drag');
         const files = e.dataTransfer.files;
-        if(files[0]) area.querySelector('input').files = files;
+        if(files[0]) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(files[0]);
+          input.files = dataTransfer.files;
+        }
       }
     });
   });

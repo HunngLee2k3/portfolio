@@ -218,6 +218,13 @@
           </select>
         </div>
         <div class="field">
+          <label>Phông nền</label>
+          <select id="backgroundColor">
+            <option value="white">Trắng</option>
+            <option value="blue">Xanh</option>
+          </select>
+        </div>
+        <div class="field">
           <label>Phóng to / thu nhỏ</label>
           <input type="range" id="zoom1" min="1" max="3" step="0.01" value="1">
         </div>
@@ -370,6 +377,7 @@
   const canvas = document.getElementById('canvas1');
   const ctx = canvas.getContext('2d');
   const sizeSelect = document.getElementById('idSize');
+  const backgroundColorSelect = document.getElementById('backgroundColor');
   const zoomSlider = document.getElementById('zoom1');
   const downloadBtn = document.getElementById('download1');
   const resetBtn = document.getElementById('reset1');
@@ -379,6 +387,10 @@
   const DISPLAY_H = 360;
 
   function currentRatio(){ return SIZES[sizeSelect.value]; }
+
+  function getBackgroundColor(){
+    return backgroundColorSelect.value === 'blue' ? '#2F6FED' : '#ffffff';
+  }
 
   function setupCanvasSize(){
     const r = currentRatio();
@@ -398,6 +410,11 @@
   function draw(){
     if(!img) return;
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = getBackgroundColor();
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
     const scale = baseScale * parseFloat(zoomSlider.value);
     const dw = img.width * scale, dh = img.height * scale;
     const maxOX = Math.max(0, (dw - canvas.width)/2);
@@ -436,6 +453,7 @@
   });
 
   sizeSelect.addEventListener('change', ()=>{ setupCanvasSize(); fitImage(); });
+  backgroundColorSelect.addEventListener('change', draw);
   zoomSlider.addEventListener('input', draw);
 
   function pointerDown(e){
@@ -469,6 +487,11 @@
     const off = document.createElement('canvas');
     off.width = targetW; off.height = targetH;
     const octx = off.getContext('2d');
+    octx.save();
+    octx.globalCompositeOperation = 'destination-over';
+    octx.fillStyle = getBackgroundColor();
+    octx.fillRect(0,0,off.width,off.height);
+    octx.restore();
     const scale = baseScale * parseFloat(zoomSlider.value);
     const dw = img.width * scale, dh = img.height * scale;
     const x = (canvas.width - dw)/2 + offsetX;

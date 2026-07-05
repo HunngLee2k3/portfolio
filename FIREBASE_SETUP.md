@@ -45,6 +45,18 @@ Vào [Firebase Console](https://console.firebase.google.com) → Select project 
      }
      ```
 
+4. **Collections > Create Collection**: `designs`
+   - Auto-generate document IDs:
+     ```json
+     {
+       "name": "Logo công ty",
+       "category": "Thiết kế",
+       "imageURL": "cloudinary-url-here",
+       "thumbnail": "cloudinary-url-here",
+       "createdAt": timestamp
+     }
+     ```
+
 ## 2. Firestore Security Rules
 
 Vào Firestore Database → Rules tab, thay thế với:
@@ -63,6 +75,9 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
     match /categories/{docId} {
+      allow write: if request.auth != null;
+    }
+    match /designs/{docId} {
       allow write: if request.auth != null;
     }
     match /profile/{docId} {
