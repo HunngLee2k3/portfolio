@@ -611,12 +611,12 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  function goTo(id, el = null){
-    const target = document.getElementById(id);
-    if (!target) return;
-    document.querySelectorAll('.tl-item').forEach(item => item.classList.remove('active'));
-    if (el) el.classList.add('active');
+  function scrollToSection(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
 
   const sections = document.querySelectorAll('section[id]');
   const navItems = document.querySelectorAll('.tl-item');
@@ -639,9 +639,12 @@
       if (!targetId) return;
       event.preventDefault();
       setActiveNav(targetId);
+      // Chặn hover/active sai do layout thay đổi trên mobile
+      // (đảm bảo scroll chính xác tới đúng section)
       scrollToSection(targetId);
     });
   });
+
   const progressFill = document.getElementById('progressFill');
   const track = document.querySelector('.timeline-track');
   const avatarEl = document.getElementById('avatarEl');
