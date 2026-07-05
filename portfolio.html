@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Minh Nhật — Video Editor</title>
+<title>Lê Văn Hùng — Video Editor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -150,7 +150,7 @@
   }
   .reveal.in-view{opacity:1; transform:translateY(0);}
 
-  section{position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:100px 24px;}
+  section{position:relative; z-index:1; max-width:1200px; margin:0 auto; padding:100px 24px; scroll-margin-top:110px;}
 
   /* ===== HERO ===== */
   .hero{
@@ -251,7 +251,8 @@
   .reel-tag.dur{left:auto; right:16px;}
 
   /* ===== PORTFOLIO ===== */
-  .tabs{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px;}
+  .tabs{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:32px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
   .tab{
     font-family:var(--mono); font-size:13px;
     padding:9px 16px; border-radius:999px;
@@ -259,6 +260,8 @@
     background:rgba(255,255,255,.035);
     cursor:pointer; transition:.25s ease;
     backdrop-filter:blur(6px);
+    flex:0 0 auto;
+    white-space:nowrap;
   }
   .tab:hover{border-color:rgba(77,216,255,.45); color:var(--text); background:rgba(77,216,255,.08); transform:translateY(-1px);}
   .tab.active{border-color:var(--cyan); color:var(--text); background:linear-gradient(90deg, rgba(47,111,237,.22), rgba(77,216,255,.16)); box-shadow:0 0 0 1px rgba(77,216,255,.12) inset;}
@@ -269,17 +272,18 @@
     gap:20px;
   }
   .pagination{
-    display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; margin-top:28px;
+    display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap; margin-top:28px; scroll-margin-top:120px;
   }
   .page-btn{
     min-width:42px; height:42px; border-radius:999px; border:1px solid rgba(255,255,255,.08);
     background:rgba(255,255,255,.035); color:var(--text); font-family:var(--mono); font-size:13px;
     cursor:pointer; transition:all .2s ease; padding:0 12px;
     display:inline-flex; align-items:center; justify-content:center;
+    white-space:nowrap;
   }
   .page-btn:hover{border-color:rgba(77,216,255,.35); background:rgba(77,216,255,.08); transform:translateY(-1px);}
   .page-btn.active{background:linear-gradient(90deg, rgba(47,111,237,.28), rgba(77,216,255,.16)); border-color:var(--cyan); box-shadow:0 0 0 1px rgba(77,216,255,.12) inset; color:#fff;}
-  .page-btn.nav{min-width:92px; padding:0 14px; font-size:12px; letter-spacing:.5px; text-transform:uppercase;}
+  .page-btn.nav{min-width:auto; padding:0 10px; font-size:11px; letter-spacing:.2px; text-transform:none;}
   .page-btn:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none;}
   .card{
     background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(10,16,32,.95));
@@ -449,12 +453,16 @@
   .reel.is-video .player-shell{display:block;}
   .reel.is-video .play-btn{display:none;}
 
-  @media(max-width:720px){
+@media(max-width:720px){
     .hero{grid-template-columns:1fr; text-align:center;}
     .avatar{margin:0 auto;}
     .contact-row{justify-content:center;}
     .grid{grid-template-columns:1fr;}
     .skill-line .name{width:120px;}
+    .tabs{flex-wrap:wrap; overflow-x:visible; -webkit-overflow-scrolling:touch; row-gap:10px; column-gap:8px;}
+    .tab{font-size:12px; padding:8px 12px; white-space:normal; max-width:100%;}
+    #work{padding-top:84px;}
+    #work .section-head{margin-bottom:24px;}
     section{padding:64px 20px;}
   }
 </style>
@@ -476,16 +484,16 @@
 </nav>
 
 <section class="hero reveal" id="home">
-  <div class="avatar" id="avatarEl"><img id="avatarImg" alt="Minh Nhật"><span id="avatarFallback">MN</span></div>
+  <div class="avatar" id="avatarEl"><img id="avatarImg" alt="Lê Văn Hùng"><span id="avatarFallback">LV</span></div>
   <div>
-    <div class="eyebrow">Đang mở · Sẵn sàng nhận việc</div>
-    <h1>Mình là Minh Nhật —<br><span class="grad">kể chuyện bằng khung hình.</span></h1>
-    <p class="desc">Học IT nhưng mê dựng phim. Mình mang tư duy logic của dân kỹ thuật vào từng bản dựng: nhịp cắt có chủ đích, màu sắc nhất quán, workflow gọn gàng như code sạch. Hiện đang tìm cơ hội đầu tiên trong ngành video editing.</p>
+    <div class="eyebrow">Editor Freelance · Sẵn sàng nhận việc</div>
+    <h1>Mình là Lê Văn Hùng —<br><span class="grad">kể chuyện bằng khung hình.</span></h1>
+    <p class="desc">Xuất thân từ dân IT nhưng có niềm đam mê lớn với dựng phim. Mình muốn thử sức với công việc edit video bằng một quy trình làm việc khoa học: nhịp cắt có chủ đích, màu sắc nhất quán và quản lý file gọn gàng. Hiện tại, mình đang tìm kiếm cơ hội đầu tiên để cống hiến và phát triển trong ngành Video Editing.</p>
     <div class="contact-row">
-      <a class="chip" href="mailto:minhnhat.edit@gmail.com"><span class="dot">✉</span> minhnhat.edit@gmail.com</a>
-      <a class="chip" href="tel:0901234567"><span class="dot">☎</span> 090 123 4567</a>
-      <a class="chip" href="#"><span class="dot">f</span> fb.com/minhnhat.edit</a>
-      <a class="chip" href="#"><span class="dot">Z</span> Zalo: 0901234567</a>
+      <a class="chip" href="mailto:lehung030203@gmail.com"><span class="dot">✉</span> lehung030203@gmail.com</a>
+      <a class="chip" href="tel:0355527588"><span class="dot">☎</span> 035 552 7588</a>
+      <a class="chip" href="https://www.facebook.com/hunnglee2003/"><span class="dot">f</span> fb.com/hunnglee2003</a>
+      <a class="chip" href="https://zalo.me/0355527588"><span class="dot">Z</span> Zalo: 0355527588</a>
     </div>
   </div>
 </section>
@@ -527,17 +535,21 @@
   </div>
   <div class="skills-panel">
     <div class="terminal-head"><span></span><span></span><span></span></div>
-    <div class="skill-line"><span class="name">Adobe Premiere Pro</span><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><span class="pct">85%</span></div>
-    <div class="skill-line"><span class="name">After Effects</span><div class="bar-bg"><div class="bar-fill" style="width:65%"></div></div><span class="pct">65%</span></div>
-    <div class="skill-line"><span class="name">DaVinci Resolve</span><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div><span class="pct">60%</span></div>
-    <div class="skill-line"><span class="name">Color Grading</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
-    <div class="skill-line"><span class="name">Sound Design</span><div class="bar-bg"><div class="bar-fill" style="width:55%"></div></div><span class="pct">55%</span></div>
+    <div class="skill-line"><span class="name">Sáng tạo Video AI</span><div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div><span class="pct">95%</span></div>
+    <div class="skill-line"><span class="name">Edit Video</span><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><span class="pct">85%</span></div>
+    <div class="skill-line"><span class="name">Color Grading & Sound Design</span><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div><span class="pct">80%</span></div>
+    <div class="skill-line"><span class="name">Photoshop & Design</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+    <!-- <div class="skill-line"><span class="name">After Effects</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div> -->
+    <div class="skill-line"><span class="name">Thumbnail</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+    <div class="skill-line"><span class="name">Cài Win & Xử lý sự cố phần mềm</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
     <div class="tag-cloud">
-      <span class="tag">Photoshop</span>
-      <span class="tag">Motion Graphics</span>
-      <span class="tag">Storyboarding</span>
+      <span class="tag">CapCut</span>
+      <span class="tag">ChatGPT</span>
+      <span class="tag">Gemini</span>
+      <span class="tag">Elevenlabs</span>
+      <span class="tag">Canva</span>
+      <span class="tag">Claude Design</span>
       <span class="tag">Python (tự động hóa workflow)</span>
-      <span class="tag">Quản lý file & backup</span>
     </div>
   </div>
   <div class="marquee-wrap">
@@ -552,18 +564,23 @@
   </div>
   <div class="edu-row">
     <div>
-      <h3>Trường Đại học [Tên trường]</h3>
+      <h3>Trường Đại Học Công Nghệ TP.HCM - HUTECH</h3>
       <p>Ngành: Công nghệ thông tin</p>
     </div>
-    <span class="tc">2022 — 2026</span>
+    <span class="tc">2021 — 2025</span>
   </div>
-  <div class="edu-row">
+  <!-- <div class="edu-row">
     <div>
-      <h3>Khóa học Dựng phim chuyên sâu</h3>
-      <p>[Tên trung tâm / khóa online] — Premiere & After Effects</p>
+      <h3>Video Affiliate & Sáng tạo nội dung ngắn</h3>
+      <p>Xây dựng và phát triển hệ thống kênh TikTok Shop và Fanpage Facebook để khai thác chiến dịch Shopee Affiliate.</p>
+        <ul>
+            <li>Ứng dụng các công cụ AI chuyển đổi văn bản và hình ảnh thành video ngắn tối ưu hóa thuật toán giữ chân người xem.</li>
+             <li>Nghiên cứu thị trường sản phẩm, xây dựng hệ thống kênh để phân phối nội dung Affiliate đa nền tảng.</li>
+            <li>Khai thác và làm mới các nguồn nội dung có sẵn (Content Curation/Re-edit), tối ưu hóa visual và âm thanh để đạt hiệu quả chuyển đổi cao nhất.</li>
+        </ul>
     </div>
-    <span class="tc">2025</span>
-  </div>
+    <span class="tc">Freelancer</span>
+  </div> -->
 </section>
 
 <section class="contact-cta reveal" id="contact">
@@ -576,7 +593,7 @@
   </div>
 </section>
 
-<footer>© 2026 MINH NHẬT — VIDEO EDITOR PORTFOLIO · DỰNG BẰNG ĐAM MÊ</footer>
+<footer>© 2026 LÊ VĂN HÙNG — VIDEO EDITOR PORTFOLIO · DỰNG BẰNG ĐAM MÊ</footer>
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -597,7 +614,6 @@
   function goTo(id, el = null){
     const target = document.getElementById(id);
     if (!target) return;
-    target.scrollIntoView({behavior:'smooth', block:'start'});
     document.querySelectorAll('.tl-item').forEach(item => item.classList.remove('active'));
     if (el) el.classList.add('active');
   }
@@ -605,6 +621,13 @@
   const sections = document.querySelectorAll('section[id]');
   const navItems = document.querySelectorAll('.tl-item');
   const idOrder = ['home','reel','work','skills','edu','contact'];
+
+  function scrollToSection(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
 
   function setActiveNav(id) {
     navItems.forEach((el, i) => el.classList.toggle('active', idOrder[i] === id));
@@ -615,11 +638,8 @@
       const targetId = item.getAttribute('data-target');
       if (!targetId) return;
       event.preventDefault();
-      const target = document.getElementById(targetId);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
       setActiveNav(targetId);
+      scrollToSection(targetId);
     });
   });
   const progressFill = document.getElementById('progressFill');
@@ -757,6 +777,13 @@
     projectsPagination.innerHTML = '';
     if (totalPages <= 1) return;
 
+    const workSection = document.getElementById('work');
+    function focusWorkTop(){
+      // Chỉ khi bấm phân trang, giữ người dùng luôn nhìn vào đầu section Dự án
+      if(workSection) workSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+
     const prevBtn = document.createElement('button');
     prevBtn.className = 'page-btn nav';
     prevBtn.textContent = '← Trang trước';
@@ -765,6 +792,7 @@
       if (currentPage > 1) {
         currentPage -= 1;
         renderProjects();
+        focusWorkTop();
       }
     });
     projectsPagination.appendChild(prevBtn);
@@ -776,6 +804,7 @@
       pageBtn.addEventListener('click', () => {
         currentPage = page;
         renderProjects();
+        focusWorkTop();
       });
       projectsPagination.appendChild(pageBtn);
     }
@@ -788,6 +817,7 @@
       if (currentPage < totalPages) {
         currentPage += 1;
         renderProjects();
+        focusWorkTop();
       }
     });
     projectsPagination.appendChild(nextBtn);
@@ -846,7 +876,6 @@
     renderPagination(filtered.length);
     requestAnimationFrame(() => {
       observeRevealElements(projectsGrid);
-      projectsGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
