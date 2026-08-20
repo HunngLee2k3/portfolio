@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-# 🎬 Minh Nhật Video Editor — Portfolio + Admin System
+# 🎬 HUNNG LEE Video Editor — Portfolio + Admin System
 
 ## 📋 Tổng quát
 
