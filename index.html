@@ -733,7 +733,7 @@
         }
       }
       if (isVideoUrl(mediaUrl)) {
-        return `<video ${thumb} controls muted playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
+        return `<video ${thumb} controls playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
       }
     }
     if (project.thumbnail || project.imageUrl) {
