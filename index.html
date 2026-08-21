@@ -698,6 +698,24 @@
 
   observeRevealElements(document);
 
+  function stopAllVideos() {
+  // Dừng tất cả video/iframe trong project cards
+  document.querySelectorAll('.card-thumb video, .card-thumb iframe').forEach(media => {
+    if (media.tagName === 'VIDEO') {
+      media.pause();
+      media.currentTime = 0;
+    } else if (media.tagName === 'IFRAME') {
+      media.src = media.src; // Reload iframe để dừng video YouTube
+    }
+  });
+  // Dừng showreel video
+  const reelVideo = reelPlayerShell.querySelector('video');
+  if (reelVideo) {
+    reelVideo.pause();
+    reelVideo.currentTime = 0;
+  }
+}
+
   function escapeHtml(value = '') {
     return String(value)
       .replace(/&/g, '&amp;')
@@ -901,6 +919,7 @@
   }
 
   function renderShowreel(url) {
+    stopAllVideos();
     currentShowreelUrl = url || '';
     reelPlayerShell.innerHTML = '';
     reelStage.classList.remove('is-video');
@@ -978,6 +997,18 @@
     renderCategoryTabs();
     renderProjects();
   });
+
+  // Dừng video cũ khi click play card video
+projectsGrid.addEventListener('click', (e) => {
+  const card = e.target.closest('.card-thumb');
+  if (card) {
+    const video = card.querySelector('video');
+    if (video) {
+      stopAllVideos();
+      video.play().catch(() => {}); // Play video mới
+    }
+  }
+});
 
   reelPlayBtn.addEventListener('click', () => {
     if (currentShowreelUrl) renderShowreel(currentShowreelUrl);
