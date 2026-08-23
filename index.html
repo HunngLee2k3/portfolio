@@ -742,7 +742,7 @@
   }
 
   // Dòng 743 - Thêm hàm này
-function extractVideoThumbnail(videoUrl, onThumbnailReady) {
+  function extractVideoThumbnail(videoUrl, onThumbnailReady) {
   const video = document.createElement('video');
   video.src = videoUrl;
   video.crossOrigin = 'anonymous';
@@ -763,20 +763,17 @@ function extractVideoThumbnail(videoUrl, onThumbnailReady) {
   };
   
   video.onerror = () => onThumbnailReady(null);
-}
+  }
 
   function getMediaMarkup(project) {
-    const mediaUrl = getProjectMediaUrl(project);
-    const thumb = project.thumbnail || project.imageUrl ? `poster="${escapeAttr(project.thumbnail || project.imageUrl)}"` : '';
-    if (mediaUrl) {
-      if (isYouTubeUrl(mediaUrl)) {
-        const videoId = mediaUrl.match(/(?:v=|\.be\/)([A-Za-z0-9_-]{11})/)?.[1];
-        if (videoId) {
-          return `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" title="${escapeAttr(project.name)}" allowfullscreen></iframe>`;
-        }
-      }
-      if (isVideoUrl(mediaUrl)) {
-        return `<video ${thumb} controls playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
+  const mediaUrl = getProjectMediaUrl(project);
+  let thumb = project.thumbnail || project.imageUrl ? `poster="${escapeAttr(project.thumbnail || project.imageUrl)}"` : '';
+  
+  if (mediaUrl) {
+    if (isYouTubeUrl(mediaUrl)) {
+      const videoId = mediaUrl.match(/(?:v=|\.be\/)([A-Za-z0-9_-]{11})/)?.[1];
+      if (videoId) {
+        return `<iframe src="https://www.youtube.com/embed/${videoId}?rel=0" title="${escapeAttr(project.name)}" allowfullscreen></iframe>`;
       }
     }
     if (isVideoUrl(mediaUrl)) {
@@ -795,11 +792,11 @@ function extractVideoThumbnail(videoUrl, onThumbnailReady) {
       return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
     }
   }
-    if (project.thumbnail || project.imageUrl) {
-      return `<img src="${escapeAttr(project.thumbnail || project.imageUrl)}" alt="${escapeAttr(project.name)}">`;
-    }
-    return `<div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div>`;
+  if (project.thumbnail || project.imageUrl) {
+    return `<img src="${escapeAttr(project.thumbnail || project.imageUrl)}" alt="${escapeAttr(project.name)}">`;
   }
+  return `<div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div>`;
+}
 
   function renderProjectCard(project) {
     const media = getMediaMarkup(project);
