@@ -741,6 +741,30 @@
     return project.videoURL || project.videoUrl || project.video || project.url || project.link || project.embedUrl || '';
   }
 
+  // Dòng 743 - Thêm hàm này
+function extractVideoThumbnail(videoUrl, onThumbnailReady) {
+  const video = document.createElement('video');
+  video.src = videoUrl;
+  video.crossOrigin = 'anonymous';
+  video.preload = 'metadata';
+  video.currentTime = 1; // Lấy khung hình tại giây thứ 1
+  
+  video.onloadedmetadata = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      onThumbnailReady(url);
+    });
+  };
+  
+  video.onerror = () => onThumbnailReady(null);
+}
+
   function getMediaMarkup(project) {
     const mediaUrl = getProjectMediaUrl(project);
     const thumb = project.thumbnail || project.imageUrl ? `poster="${escapeAttr(project.thumbnail || project.imageUrl)}"` : '';
@@ -755,6 +779,22 @@
         return `<video ${thumb} controls playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
       }
     }
+    if (isVideoUrl(mediaUrl)) {
+      // Nếu là video mà không có thumbnail, tự động tạo từ video
+      if (!thumb) {
+        extractVideoThumbnail(mediaUrl, (thumbUrl) => {
+          if (thumbUrl) {
+            // Tìm video element và set poster
+            const videoEls = document.querySelectorAll(`video[data-video-url="${escapeAttr(mediaUrl)}"]`);
+            videoEls.forEach(el => {
+              el.poster = thumbUrl;
+            });
+          }
+        });
+      }
+      return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
+    }
+  }
     if (project.thumbnail || project.imageUrl) {
       return `<img src="${escapeAttr(project.thumbnail || project.imageUrl)}" alt="${escapeAttr(project.name)}">`;
     }
