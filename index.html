@@ -767,7 +767,7 @@
 
   function getMediaMarkup(project) {
   const mediaUrl = getProjectMediaUrl(project);
-  let thumb = (project.thumbnail || project.imageUrl) ? `poster="${escapeAttr(project.thumbnail || project.imageUrl)}"` : '';
+  let thumb = (project.thumbnail || project.imageUrl || project.imageURL) ? `poster="${escapeAttr(project.thumbnail || project.imageUrl || project.imageURL)}"` : '';
   
   if (mediaUrl) {
     if (isYouTubeUrl(mediaUrl)) {
@@ -790,10 +790,10 @@
         });
       }
       // Dòng 792 - Thêm crossOrigin cho video
-return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline preload="none" crossOrigin="anonymous" src="${escapeAttr(mediaUrl)}"></video>`;
+return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} style="object-fit:cover;" controls playsinline preload="none" crossOrigin="anonymous" src="${escapeAttr(mediaUrl)}"></video>`;
     }
   }
-  if (project.thumbnail || project.imageUrl) {
+  if (project.thumbnail || project.imageUrl || project.imageURL) {
     return `<img src="${escapeAttr(project.thumbnail || project.imageUrl)}" alt="${escapeAttr(project.name)}">`;
   }
   return `<div class="mini-play"><svg viewBox="0 0 24 24" fill="var(--text)"><path d="M8 5v14l11-7z"/></svg></div>`;
