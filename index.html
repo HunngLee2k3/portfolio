@@ -790,7 +790,7 @@
         });
       }
       // Dòng 792 - Thêm crossOrigin cho video
-return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline loop preload="metadata" crossOrigin="anonymous" src="${escapeAttr(mediaUrl)}"></video>`;
+return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline preload="none" crossOrigin="anonymous" src="${escapeAttr(mediaUrl)}"></video>`;
     }
   }
   if (project.thumbnail || project.imageUrl) {
@@ -986,9 +986,18 @@ return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsi
     if (isVideoUrl(url)) {
       reelStage.classList.add('is-video');
       reelPlayBtn.style.display = 'none';
-      reelPlayerShell.innerHTML = `<video muted playsinline loop autoplay preload="metadata" src="${escapeAttr(url)}"></video>`;
+      reelPlayerShell.innerHTML = `<video muted playsinline preload="none" src="${escapeAttr(url)}"></video>`;
     }
   }
+
+  // Thêm sự kiện phát video khi nhấn play button
+reelPlayBtn.addEventListener('click', () => {
+  const video = reelPlayerShell.querySelector('video');
+  if(video) {
+    video.play();
+    reelPlayBtn.style.display = 'none';
+  }
+});
 
   function setAvatar(url) {
     if (url) {
