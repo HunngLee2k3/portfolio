@@ -767,7 +767,7 @@
 
   function getMediaMarkup(project) {
   const mediaUrl = getProjectMediaUrl(project);
-  let thumb = project.thumbnail || project.imageUrl ? `poster="${escapeAttr(project.thumbnail || project.imageUrl)}"` : '';
+  let thumb = (project.thumbnail || project.imageUrl) ? `poster="${escapeAttr(project.thumbnail || project.imageUrl)}"` : '';
   
   if (mediaUrl) {
     if (isYouTubeUrl(mediaUrl)) {
@@ -789,7 +789,8 @@
           }
         });
       }
-      return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline loop preload="metadata" src="${escapeAttr(mediaUrl)}"></video>`;
+      // Dòng 792 - Thêm crossOrigin cho video
+return `<video data-video-url="${escapeAttr(mediaUrl)}" ${thumb} controls playsinline loop preload="metadata" crossOrigin="anonymous" src="${escapeAttr(mediaUrl)}"></video>`;
     }
   }
   if (project.thumbnail || project.imageUrl) {
