@@ -1,175 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel — Minh Nhật Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --primary:#5B5FFF;
-    --primary-light:#8B8FFF;
-    --danger:#FF4757;
-    --success:#2ED573;
-    --warning:#FFA502;
-    --bg:#F5F6FA;
-    --surface:#FFFFFF;
-    --text:#333333;
-    --muted:#8B92A9;
-    --border:#E8EBEF;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;}
-  a{color:inherit;text-decoration:none;}
-
-  .header{
-    background:linear-gradient(135deg, var(--primary), var(--primary-light));
-    color:#fff;
-    padding:20px 32px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
-  }
-  .header h1{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;}
-  .header .btn-logout{
-    background:rgba(255,255,255,.2);
-    border:1px solid rgba(255,255,255,.3);
-    color:#fff;
-    padding:8px 16px;
-    border-radius:6px;
-    cursor:pointer;
-    transition:.2s;
-  }
-  .header .btn-logout:hover{background:rgba(255,255,255,.3);}
-
-  .container{max-width:1200px;margin:0 auto;padding:32px 20px;}
-
-  .tabs{
-    display:flex;
-    gap:12px;
-    border-bottom:2px solid var(--border);
-    margin-bottom:32px;
-    overflow-x:auto;
-  }
-  .tab{
-    padding:12px 20px;
-    cursor:pointer;
-    border:none;
-    background:none;
-    font-size:15px;
-    font-weight:500;
-    color:var(--muted);
-    border-bottom:3px solid transparent;
-    transition:.2s;
-  }
-  .tab.active{color:var(--primary);border-bottom-color:var(--primary);}
-  .tab:hover{color:var(--text);}
-
-  .tab-content{display:none;}
-  .tab-content.active{display:block;}
-
-  .form-group{margin-bottom:24px;}
-  .form-group label{display:block;margin-bottom:8px;font-weight:500;color:var(--text);}
-  input[type=text], input[type=email], input[type=password], textarea, select{
-    width:100%;
-    padding:10px 14px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    font-family:inherit;
-    font-size:14px;
-    background:var(--surface);
-  }
-  input:focus, textarea:focus, select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,95,255,.1);}
-  textarea{min-height:100px;resize:vertical;}
-
-  .upload-area{
-    border:2px dashed var(--border);
-    border-radius:8px;
-    padding:32px;
-    text-align:center;
-    cursor:pointer;
-    transition:.2s;
-  }
-  .upload-area:hover{border-color:var(--primary);background:rgba(91,95,255,.02);}
-  .upload-area.drag{border-color:var(--primary);background:rgba(91,95,255,.05);}
-  .upload-area input{display:none;}
-  .upload-area p{color:var(--muted);font-size:14px;}
-  .upload-area strong{color:var(--primary);}
-  .upload-status{margin-top:10px;font-size:13px;color:var(--primary);font-weight:600;display:none;}
-  .upload-status.show{display:block;}
-  .upload-file-name{margin-top:8px;font-size:13px;color:var(--muted);display:none;}
-  .upload-file-name.show{display:block;}
-  .upload-progress{margin-top:8px;height:6px;border-radius:999px;background:var(--border);overflow:hidden;display:none;}
-  .upload-progress.show{display:block;}
-  .upload-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--primary-light));transition:width .2s ease;}
-
-  .preview-thumb{
-    margin-top:12px;
-    max-width:200px;
-    border-radius:8px;
-    object-fit:cover;
-  }
-
-  .btn{
-    padding:10px 20px;
-    border-radius:8px;
-    border:none;
-    cursor:pointer;
-    font-weight:500;
-    transition:.2s;
-    font-size:14px;
-  }
-  .btn-primary{background:var(--primary);color:#fff;}
-  .btn-primary:hover{background:#4A4ECC;box-shadow:0 4px 12px rgba(91,95,255,.3);}
-  .btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text);}
-  .btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
-  .btn-danger{background:var(--danger);color:#fff;}
-  .btn-danger:hover{background:#E63946;}
-  .btn-success{background:var(--success);color:#fff;}
-  .btn-success:hover{background:#26C463;}
-  .btn-warning{background:var(--warning);color:#fff;}
-
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-  @media(max-width:640px){.form-row{grid-template-columns:1fr;}}
-
-  .table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);}
-  .table th{background:var(--bg);padding:12px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);}
-  .table td{padding:12px;border-bottom:1px solid var(--border);}
-  .table tr:hover{background:rgba(91,95,255,.02);}
-  .table img{max-width:60px;border-radius:6px;}
-
-  .actions{display:flex;gap:6px;}
-  .actions button{padding:6px 12px;font-size:12px;}
-
-  .loading{display:none;text-align:center;color:var(--muted);}
-  .loading.show{display:block;}
-
-  .toast{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    padding:12px 20px;
-    border-radius:8px;
-    color:#fff;
-    opacity:0;
-    transform:translateY(20px);
-    transition:.3s;
-    z-index:1000;
-  }
-  .toast.show{opacity:1;transform:translateY(0);}
-  .toast.success{background:var(--success);}
-  .toast.error{background:var(--danger);}
-  .toast.warning{background:var(--warning);}
-
-  .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
-  .modal.show{display:flex;}
-  .modal-content{background:var(--surface);border-radius:8px;padding:32px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
-  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-  .modal-header h2{font-family:'Space Grotesk',sans-serif;}
-  .modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Lê Văn Hùng Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
 
@@ -179,9 +17,9 @@
 </div>
 
 <!-- LOGIN FORM -->
-<div id="loginScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
-  <div class="container" style="max-width:400px;">
-    <h2 style="text-align:center;margin-bottom:32px;font-family:'Space Grotesk',sans-serif;">Đăng nhập Admin</h2>
+<div id="loginScreen" class="login-screen">
+  <div class="container login-box">
+    <h2 class="login-title">Đăng nhập Admin</h2>
     <div class="form-group">
       <label>Email</label>
       <input type="email" id="emailInput" placeholder="admin@example.com">
@@ -190,7 +28,7 @@
       <label>Mật khẩu</label>
       <input type="password" id="passwordInput" placeholder="••••••••">
     </div>
-    <button class="btn btn-primary" style="width:100;" id="loginBtn">Đăng nhập</button>
+    <button class="btn btn-primary" style="width:100%;" id="loginBtn">Đăng nhập</button>
   </div>
 </div>
 
@@ -207,7 +45,7 @@
     <!-- TAB: VIDEO DỰ ÁN -->
     <div id="projects" class="tab-content active">
       <h2>Quản lý Video Dự án</h2>
-      <form id="projectForm" style="margin:24px 0;padding:24px;background:#fff;border-radius:8px;">
+      <form id="projectForm" class="panel-card">
         <div class="form-row">
           <div class="form-group">
             <label>Tên dự án *</label>
@@ -248,7 +86,7 @@
     <!-- TAB: SHOWREEL -->
     <div id="showreel" class="tab-content">
       <h2>Cập nhật Showreel</h2>
-      <div style="padding:24px;background:#fff;border-radius:8px;">
+      <div class="panel-card">
         <div class="form-group">
           <label>Video Showreel (tệp từ máy hoặc URL)</label>
           <div class="upload-area" id="showreelVideoUpload">
@@ -267,7 +105,7 @@
     <!-- TAB: AVATAR -->
     <div id="avatar" class="tab-content">
       <h2>Cập nhật Avatar</h2>
-      <div style="padding:24px;background:#fff;border-radius:8px;">
+      <div class="panel-card">
         <div class="form-group">
           <label>Ảnh Avatar *</label>
           <div class="upload-area" id="avatarUpload">
@@ -283,7 +121,7 @@
     <!-- TAB: DANH SÁCH CHUYÊN NGÀNH -->
     <div id="categories" class="tab-content">
       <h2>Quản lý Danh sách chuyên ngành</h2>
-      <div style="padding:24px;background:#fff;border-radius:8px;margin-bottom:24px;">
+      <div class="panel-card">
         <div class="form-group">
           <label>Tên chuyên ngành *</label>
           <input type="text" id="catName" placeholder="Ví dụ: TVC / Quảng cáo">
@@ -330,7 +168,7 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCBdXaVp9oL-_sOd0gj0iGsZK2fCVrbw3M",
@@ -359,82 +197,87 @@ const toast = document.getElementById('toast');
 
 // ===== AUTHENTICATION =====
 onAuthStateChanged(auth, (user) => {
-  if(user){
+  if (user) {
     loginScreen.style.display = 'none';
     adminPanel.style.display = 'block';
     loadAllData();
-  }else{
+  } else {
     loginScreen.style.display = 'flex';
     adminPanel.style.display = 'none';
   }
 });
 
-loginBtn.addEventListener('click', async () => {
+async function handleLogin() {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-  if(!email || !password) return showToast('Vui lòng nhập email và mật khẩu', 'error');
-  try{
+  if (!email || !password) return showToast('Vui lòng nhập email và mật khẩu', 'error');
+  try {
     await signInWithEmailAndPassword(auth, email, password);
-  }catch(e){
+  } catch (e) {
     showToast('Đăng nhập thất bại: ' + e.message, 'error');
   }
+}
+
+loginBtn.addEventListener('click', handleLogin);
+passwordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleLogin();
 });
 
 logoutBtn.addEventListener('click', () => {
   signOut(auth);
 });
 
-function showToast(msg, type = 'success'){
+function showToast(msg, type = 'success') {
   toast.textContent = msg;
   toast.className = 'toast show ' + type;
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function setUploadStatus(id, message, isVisible = true){
+function setUploadStatus(id, message, isVisible = true) {
   const el = document.getElementById(id);
-  if(!el) return;
+  if (!el) return;
   el.textContent = message;
   el.classList.toggle('show', isVisible);
 }
 
-function setUploadProgress(id, percent){
+function setUploadProgress(id, percent) {
   const wrap = document.getElementById(id);
   const bar = wrap?.querySelector('.upload-progress-bar');
-  if(!wrap || !bar) return;
+  if (!wrap || !bar) return;
   wrap.classList.toggle('show', percent > 0 && percent < 100);
   bar.style.width = percent + '%';
 }
 
-function setSelectedFileName(id, fileName){
+function setSelectedFileName(id, fileName) {
   const el = document.getElementById(id);
-  if(!el) return;
+  if (!el) return;
   el.textContent = fileName ? `Đã chọn: ${fileName}` : 'Chưa có file nào được chọn';
   el.classList.toggle('show', Boolean(fileName));
 }
 
 // ===== CLOUDINARY UPLOAD =====
-async function uploadToCloudinary(file, resourceType = 'auto', statusId = '', progressId = ''){
-  if(statusId) setUploadStatus(statusId, 'Đang upload...');
-  if(progressId) setUploadProgress(progressId, 10);
+async function uploadToCloudinary(file, resourceType = 'auto', statusId = '', progressId = '') {
+  if (statusId) setUploadStatus(statusId, 'Đang upload...');
+  if (progressId) setUploadProgress(progressId, 10);
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', cloudinaryPreset);
-  try{
-    if(progressId) setUploadProgress(progressId, 40);
+  try {
+    if (progressId) setUploadProgress(progressId, 40);
     const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloud}/${resourceType === 'video' ? 'video' : 'image'}/upload`, {
       method: 'POST',
       body: formData
     });
     const data = await res.json();
-    if(progressId) setUploadProgress(progressId, 100);
-    if(data.secure_url) {
-      if(statusId) setUploadStatus(statusId, 'Upload thành công', true);
+    if (progressId) setUploadProgress(progressId, 100);
+    if (data.secure_url) {
+      if (statusId) setUploadStatus(statusId, 'Upload thành công', true);
       return data.secure_url;
     }
     throw new Error(data.error?.message || 'Upload failed');
-  }catch(e){
-    if(progressId) setUploadProgress(progressId, 0);
-    if(statusId) setUploadStatus(statusId, 'Upload thất bại', true);
+  } catch (e) {
+    if (progressId) setUploadProgress(progressId, 0);
+    if (statusId) setUploadStatus(statusId, 'Upload thất bại', true);
     showToast('Upload lỗi: ' + e.message, 'error');
     return null;
   }
@@ -449,7 +292,7 @@ const projectVideoInput = document.getElementById('projectVideoFile');
 projectVideoInput.addEventListener('change', () => {
   const file = projectVideoInput.files[0];
   setSelectedFileName('projectFileName', file ? file.name : '');
-  if(file){
+  if (file) {
     setUploadStatus('projectUploadStatus', 'Đang chờ upload...', true);
     setUploadProgress('projectUploadProgress', 0);
   } else {
@@ -465,26 +308,32 @@ projectForm.addEventListener('submit', async (e) => {
   const url = document.getElementById('projectURL').value.trim();
   const mediaFile = document.getElementById('projectVideoFile').files[0];
 
-  if(!name || !cat) return showToast('Vui lòng nhập tên và chọn chuyên ngành', 'error');
+  if (!name || !cat) return showToast('Vui lòng nhập tên và chọn chuyên ngành', 'error');
 
   let videoURL = '';
   let imageURL = '';
   let mediaType = '';
-  if(mediaFile) {
+  if (mediaFile) {
     setSelectedFileName('projectFileName', mediaFile.name);
     const isImage = mediaFile.type.startsWith('image/');
     mediaType = isImage ? 'image' : 'video';
     const uploadedUrl = await uploadToCloudinary(mediaFile, mediaType, 'projectUploadStatus', 'projectUploadProgress');
-    if(isImage){
+    if (isImage) {
       imageURL = uploadedUrl;
-    }else{
+    } else {
       videoURL = uploadedUrl;
     }
   }
-  if(!videoURL && !imageURL) videoURL = url;
-  if(!videoURL && !imageURL) return showToast('Vui lòng chọn ảnh/video hoặc nhập URL', 'error');
+  if (!videoURL && !imageURL) videoURL = url;
+  if (!videoURL && !imageURL) return showToast('Vui lòng chọn ảnh/video hoặc nhập URL', 'error');
 
-  try{
+  const generatedThumb = imageURL || (
+    /res\.cloudinary\.com\/.*\/video\/upload\//i.test(videoURL)
+      ? videoURL.replace('/video/upload/', '/video/upload/so_1,f_jpg,q_auto,w_600/').replace(/\.(mp4|mov|webm|mkv|m3u8)(\?.*)?$/i, '.jpg')
+      : ''
+  );
+
+  try {
     await addDoc(collection(db, 'projects'), {
       name,
       category: cat,
@@ -492,7 +341,7 @@ projectForm.addEventListener('submit', async (e) => {
       videoUrl: videoURL,
       imageURL: imageURL,
       imageUrl: imageURL,
-      thumbnail: imageURL || videoURL,
+      thumbnail: generatedThumb,
       mediaType,
       createdAt: new Date()
     });
@@ -502,40 +351,41 @@ projectForm.addEventListener('submit', async (e) => {
     setUploadProgress('projectUploadProgress', 0);
     setSelectedFileName('projectFileName', '');
     loadProjects();
-  }catch(e){
+  } catch (e) {
     showToast('Lỗi: ' + e.message, 'error');
   }
 });
 
-async function loadProjects(){
-  try{
+async function loadProjects() {
+  try {
     const snap = await getDocs(collection(db, 'projects'));
-    projectsTableBody.innerHTML = '';
-    snap.forEach(doc => {
-      const data = doc.data();
-      projectsTableBody.innerHTML += `
+    const rows = [];
+    snap.forEach(d => {
+      const data = d.data();
+      rows.push(`
         <tr>
           <td>${data.name}</td>
           <td>${data.category}</td>
           <td>${data.imageURL ? '<span style="color:#2ED573;">Có ảnh</span>' : data.videoURL ? '<span style="color:#2ED573;">Có video</span>' : '-'}</td>
           <td class="actions">
-            <button class="btn btn-danger btn-sm" onclick="deleteProject('${doc.id}')">Xoá</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProject('${d.id}')">Xoá</button>
           </td>
         </tr>
-      `;
+      `);
     });
-  }catch(e){
+    projectsTableBody.innerHTML = rows.join('');
+  } catch (e) {
     showToast('Lỗi tải dữ liệu: ' + e.message, 'error');
   }
 }
 
 window.deleteProject = async (docId) => {
-  if(!confirm('Xác nhận xoá?')) return;
-  try{
+  if (!confirm('Xác nhận xoá?')) return;
+  try {
     await deleteDoc(doc(db, 'projects', docId));
     showToast('Đã xoá', 'success');
     loadProjects();
-  }catch(e){
+  } catch (e) {
     showToast('Lỗi: ' + e.message, 'error');
   }
 };
@@ -545,7 +395,7 @@ const showreelVideoInput = document.getElementById('showreelVideoFile');
 showreelVideoInput.addEventListener('change', () => {
   const file = showreelVideoInput.files[0];
   setSelectedFileName('showreelFileName', file ? file.name : '');
-  if(file){
+  if (file) {
     setUploadStatus('showreelUploadStatus', 'Đang chờ upload...', true);
     setUploadProgress('showreelUploadProgress', 0);
   } else {
@@ -558,16 +408,16 @@ document.getElementById('saveShowreel').addEventListener('click', async () => {
   const url = document.getElementById('showreelURL').value.trim();
   const videoFile = document.getElementById('showreelVideoFile').files[0];
 
-  if(!videoFile && !url) return showToast('Vui lòng chọn video từ máy hoặc nhập URL', 'error');
+  if (!videoFile && !url) return showToast('Vui lòng chọn video từ máy hoặc nhập URL', 'error');
 
   let finalUrl = url;
-  if(videoFile) {
+  if (videoFile) {
     setSelectedFileName('showreelFileName', videoFile.name);
     finalUrl = await uploadToCloudinary(videoFile, 'video', 'showreelUploadStatus', 'showreelUploadProgress');
   }
-  if(!finalUrl) return;
+  if (!finalUrl) return;
 
-  try{
+  try {
     await setDoc(doc(db, 'profile', 'showreel'), { url: finalUrl, updatedAt: new Date() });
     showToast('Cập nhật showreel thành công', 'success');
     document.getElementById('showreelURL').value = '';
@@ -575,20 +425,18 @@ document.getElementById('saveShowreel').addEventListener('click', async () => {
     setUploadStatus('showreelUploadStatus', 'Đang chờ chọn video...', false);
     setUploadProgress('showreelUploadProgress', 0);
     setSelectedFileName('showreelFileName', '');
-  }catch(e){
+  } catch (e) {
     showToast('Lỗi: ' + e.message, 'error');
   }
 });
 
 // ===== AVATAR =====
-const avatarUpload = document.getElementById('avatarUpload');
 const avatarFile = document.getElementById('avatarFile');
 const avatarPreview = document.getElementById('avatarPreview');
 
-avatarUpload.addEventListener('click', () => avatarFile.click());
 avatarFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
-  if(file){
+  if (file) {
     const reader = new FileReader();
     reader.onload = (evt) => {
       avatarPreview.src = evt.target.result;
@@ -599,13 +447,13 @@ avatarFile.addEventListener('change', (e) => {
 });
 
 document.getElementById('saveAvatar').addEventListener('click', async () => {
-  if(!avatarFile.files[0]) return showToast('Chọn ảnh trước', 'error');
+  if (!avatarFile.files[0]) return showToast('Chọn ảnh trước', 'error');
   const url = await uploadToCloudinary(avatarFile.files[0], 'image');
-  if(url){
-    try{
+  if (url) {
+    try {
       await setDoc(doc(db, 'profile', 'avatar'), { url, updatedAt: new Date() });
       showToast('Cập nhật avatar thành công', 'success');
-    }catch(e){
+    } catch (e) {
       showToast('Lỗi: ' + e.message, 'error');
     }
   }
@@ -613,7 +461,6 @@ document.getElementById('saveAvatar').addEventListener('click', async () => {
 
 // ===== CATEGORIES =====
 const categoriesTableBody = document.getElementById('categoriesTableBody');
-const catIconUpload = document.getElementById('catIconUpload');
 const catIconFile = document.getElementById('catIconFile');
 const catIconPreview = document.getElementById('catIconPreview');
 const catIconUploadWrap = document.getElementById('catIconUploadWrap');
@@ -633,11 +480,10 @@ catIconTypeRadios.forEach(radio => {
   });
 });
 
-catIconUpload.addEventListener('click', () => catIconFile.click());
 catIconFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
   setSelectedFileName('catIconFileName', file ? file.name : '');
-  if(file){
+  if (file) {
     const reader = new FileReader();
     reader.onload = (evt) => {
       catIconPreview.src = evt.target.result;
@@ -657,10 +503,10 @@ document.getElementById('addCategory').addEventListener('click', async () => {
   const name = document.getElementById('catName').value.trim();
   const selectedType = document.querySelector('input[name="catIconType"]:checked')?.value || 'emoji';
   const emoji = selectedType === 'emoji' ? (document.getElementById('catEmoji').value.trim() || '📺') : '📺';
-  if(!name) return showToast('Vui lòng nhập tên chuyên ngành', 'error');
-  try{
+  if (!name) return showToast('Vui lòng nhập tên chuyên ngành', 'error');
+  try {
     let iconUrl = '';
-    if(selectedType === 'image' && catIconFile.files[0]) {
+    if (selectedType === 'image' && catIconFile.files[0]) {
       iconUrl = await uploadToCloudinary(catIconFile.files[0], 'image', 'catIconUploadStatus', 'catIconUploadProgress');
     }
     await addDoc(collection(db, 'categories'), { name, emoji, iconUrl, createdAt: new Date() });
@@ -675,43 +521,44 @@ document.getElementById('addCategory').addEventListener('click', async () => {
     setUploadProgress('catIconUploadProgress', 0);
     setSelectedFileName('catIconFileName', '');
     loadCategories();
-  }catch(e){
+  } catch (e) {
     showToast('Lỗi: ' + e.message, 'error');
   }
 });
 
-async function loadCategories(){
-  try{
+async function loadCategories() {
+  try {
     const snap = await getDocs(collection(db, 'categories'));
-    categoriesTableBody.innerHTML = '';
+    const rows = [];
     const options = ['<option value="">-- Chọn chuyên ngành --</option>'];
-    snap.forEach(doc => {
-      const data = doc.data();
+    snap.forEach(d => {
+      const data = d.data();
       const name = data.name;
       options.push(`<option value="${name}">${name}</option>`);
-      categoriesTableBody.innerHTML += `
+      rows.push(`
         <tr>
           <td>${name}</td>
           <td>${data.iconUrl ? `<img src="${data.iconUrl}" alt="${name}" style="width:28px;height:28px;border-radius:6px;object-fit:cover;">` : data.emoji}</td>
           <td class="actions">
-            <button class="btn btn-danger btn-sm" onclick="deleteCategory('${doc.id}')">Xoá</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCategory('${d.id}')">Xoá</button>
           </td>
         </tr>
-      `;
+      `);
     });
+    categoriesTableBody.innerHTML = rows.join('');
     projectCatSelect.innerHTML = options.join('');
-  }catch(e){
+  } catch (e) {
     showToast('Lỗi tải categories: ' + e.message, 'error');
   }
 }
 
 window.deleteCategory = async (docId) => {
-  if(!confirm('Xác nhận xoá?')) return;
-  try{
+  if (!confirm('Xác nhận xoá?')) return;
+  try {
     await deleteDoc(doc(db, 'categories', docId));
     showToast('Đã xoá', 'success');
     loadCategories();
-  }catch(e){
+  } catch (e) {
     showToast('Lỗi: ' + e.message, 'error');
   }
 };
@@ -726,31 +573,32 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// ===== DRAG & DROP ===== 
+// ===== DRAG & DROP =====
 ['avatarUpload', 'projectVideoUpload', 'showreelVideoUpload', 'catIconUpload'].forEach(id => {
   const area = document.getElementById(id);
-  if(!area) return;
+  if (!area) return;
   const input = area.querySelector('input');
   area.addEventListener('click', () => input.click());
-  ['dragover','dragleave','drop'].forEach(evt => {
+  ['dragover', 'dragleave', 'drop'].forEach(evt => {
     area.addEventListener(evt, (e) => {
       e.preventDefault();
-      if(evt === 'dragover') area.classList.add('drag');
-      if(evt === 'dragleave') area.classList.remove('drag');
-      if(evt === 'drop'){
+      if (evt === 'dragover') area.classList.add('drag');
+      if (evt === 'dragleave') area.classList.remove('drag');
+      if (evt === 'drop') {
         area.classList.remove('drag');
         const files = e.dataTransfer.files;
-        if(files[0]) {
+        if (files[0]) {
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(files[0]);
           input.files = dataTransfer.files;
+          input.dispatchEvent(new Event('change'));
         }
       }
     });
   });
 });
 
-function loadAllData(){
+function loadAllData() {
   loadProjects();
   loadCategories();
 }
