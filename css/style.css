@@ -30,6 +30,8 @@ html {
   scroll-padding-top: 90px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -37,8 +39,8 @@ body {
   color: var(--text);
   font-family: var(--body);
   line-height: 1.6;
-  overflow-x: hidden;
-  perspective: 1400px;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 a {
@@ -49,9 +51,10 @@ a {
 /* ===== 3D WEBGL BACKGROUND CANVAS ===== */
 #bg3dCanvas {
   position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
   display: block;
@@ -100,11 +103,12 @@ body::before {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(8, 13, 24, 0.82);
+  background: rgba(8, 13, 24, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(77, 216, 255, 0.16);
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.55);
+  width: 100%;
 }
 
 .timeline-track {
@@ -191,62 +195,66 @@ body::before {
   color: var(--cyan);
 }
 
-/* ===== 3D SCROLL REVEAL & DEPTH PARALLAX ===== */
+/* ===== 3D SCROLL REVEAL ===== */
 .reveal {
   opacity: 0;
-  transform: perspective(1200px) translate3d(0, 40px, -60px) rotateX(6deg);
-  transition: opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
-  transform-style: preserve-3d;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out);
 }
 
 .reveal.in-view {
   opacity: 1;
-  transform: perspective(1200px) translate3d(0, 0, 0) rotateX(0deg);
+  transform: translate3d(0, 0, 0);
 }
 
-/* Section 3D Depth Container */
+/* Section Container */
 section {
   position: relative;
   z-index: 1;
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 100px 24px;
   scroll-margin-top: 90px;
-  transform-style: preserve-3d;
-  will-change: transform;
 }
 
-/* ===== 3D TILT & GLARE SYSTEM ===== */
-.tilt-3d {
-  position: relative;
-  transform-style: preserve-3d;
-  will-change: transform;
-  transition: transform 0.18s cubic-bezier(0.03, 0.98, 0.52, 0.99), box-shadow 0.3s ease, border-color 0.3s ease;
-}
+/* ===== 3D TILT & GLARE SYSTEM (PC Only) ===== */
+@media (min-width: 961px) and (pointer: fine) {
+  .tilt-3d {
+    position: relative;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.18s cubic-bezier(0.03, 0.98, 0.52, 0.99), box-shadow 0.3s ease, border-color 0.3s ease;
+  }
 
-.tilt-3d.is-resetting {
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, border-color 0.3s ease;
-}
+  .tilt-3d.is-resetting {
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  }
 
-.tilt-glare {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 5;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  background: radial-gradient(
-    360px circle at var(--glare-x, 50%) var(--glare-y, 50%),
-    rgba(77, 216, 255, 0.22),
-    rgba(47, 111, 237, 0.08) 40%,
-    transparent 80%
-  );
-  mix-blend-mode: screen;
-}
+  .tilt-glare {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      360px circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgba(77, 216, 255, 0.22),
+      rgba(47, 111, 237, 0.08) 40%,
+      transparent 80%
+    );
+    mix-blend-mode: screen;
+  }
 
-.tilt-3d:hover .tilt-glare {
-  opacity: 1;
+  .tilt-3d:hover .tilt-glare {
+    opacity: 1;
+  }
+
+  .card-body {
+    transform: translateZ(18px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -262,7 +270,6 @@ section {
 
 .section-head {
   margin-bottom: 36px;
-  transform: translateZ(20px);
 }
 
 .section-head .tc-label {
@@ -305,7 +312,6 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  transform-style: preserve-3d;
 }
 
 /* Floating 3D Orbital Rings around Avatar */
@@ -313,7 +319,7 @@ section {
 .avatar-wrap-3d::after {
   content: '';
   position: absolute;
-  inset: -12px;
+  inset: -10px;
   border-radius: 50%;
   border: 1px dashed rgba(77, 216, 255, 0.35);
   pointer-events: none;
@@ -321,20 +327,20 @@ section {
 }
 
 .avatar-wrap-3d::after {
-  inset: -22px;
+  inset: -18px;
   border: 1px solid rgba(47, 111, 237, 0.25);
   border-top-color: var(--cyan);
   animation: orbit-spin-reverse 12s linear infinite;
 }
 
 @keyframes orbit-spin {
-  0% { transform: rotateZ(0deg) rotateX(22deg) rotateY(10deg); }
-  100% { transform: rotateZ(360deg) rotateX(22deg) rotateY(10deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes orbit-spin-reverse {
-  0% { transform: rotateZ(360deg) rotateX(-18deg) rotateY(15deg); }
-  100% { transform: rotateZ(0deg) rotateX(-18deg) rotateY(15deg); }
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
 }
 
 .avatar {
@@ -347,7 +353,6 @@ section {
   box-shadow:
     0 20px 50px rgba(47, 111, 237, 0.35),
     0 0 30px rgba(77, 216, 255, 0.2);
-  transform-style: preserve-3d;
 }
 
 .avatar::before {
@@ -369,7 +374,6 @@ section {
   font-weight: 700;
   color: var(--text);
   z-index: 1;
-  transform: translateZ(25px);
   text-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -382,7 +386,6 @@ section {
   object-fit: cover;
   z-index: 1;
   display: none;
-  transform: translateZ(16px);
 }
 
 .avatar.has-image img {
@@ -413,6 +416,7 @@ section {
   background: var(--cyan);
   box-shadow: 0 0 10px var(--cyan);
   animation: pulse 2s infinite;
+  flex-shrink: 0;
 }
 
 @keyframes pulse {
@@ -422,7 +426,7 @@ section {
 
 .hero h1 {
   font-family: var(--display);
-  font-size: clamp(32px, 5vw, 52px);
+  font-size: clamp(28px, 5vw, 52px);
   font-weight: 700;
   line-height: 1.15;
   margin-bottom: 16px;
@@ -459,33 +463,37 @@ section {
 .chip {
   font-family: var(--mono);
   font-size: 13px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
   border: 1px solid rgba(77, 216, 255, 0.18);
   background: rgba(15, 24, 48, 0.65);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 100px;
   color: var(--text);
+  max-width: 100%;
   transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s var(--ease-out), box-shadow 0.25s ease;
 }
 
 .chip:hover {
   border-color: var(--cyan);
   background: rgba(77, 216, 255, 0.12);
-  transform: translateY(-3px) translateZ(12px);
+  transform: translateY(-2px);
   box-shadow: 0 10px 24px rgba(77, 216, 255, 0.18);
 }
 
 .chip .dot {
   color: var(--cyan);
+  flex-shrink: 0;
 }
 
 /* ===== SHOWREEL 3D ===== */
 .reel {
   position: relative;
   aspect-ratio: 9 / 16;
+  width: 100%;
   max-width: 360px;
   margin: 0 auto;
   border-radius: 20px;
@@ -498,7 +506,6 @@ section {
   box-shadow:
     0 30px 70px rgba(2, 6, 23, 0.7),
     0 0 40px rgba(47, 111, 237, 0.18);
-  transform-style: preserve-3d;
 }
 
 .reel::before {
@@ -528,14 +535,14 @@ section {
   transition: transform 0.25s var(--ease-out), background 0.25s ease, box-shadow 0.25s ease;
   z-index: 3;
   backdrop-filter: blur(6px);
-  transform: translateZ(35px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 12px 30px rgba(47, 111, 237, 0.4);
 }
 
 .play-btn:hover {
   background: var(--blue);
   box-shadow: 0 0 36px rgba(77, 216, 255, 0.65);
-  transform: translateZ(45px) scale(1.08);
+  transform: scale(1.08);
 }
 
 .play-btn svg {
@@ -557,7 +564,6 @@ section {
   border-radius: 6px;
   z-index: 2;
   pointer-events: none;
-  transform: translateZ(25px);
 }
 
 .reel-tag.dur {
@@ -615,6 +621,7 @@ section {
   color: #9eb0d2;
   background: rgba(15, 24, 48, 0.65);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s var(--ease-out), box-shadow 0.2s ease;
   flex: 0 0 auto;
@@ -648,9 +655,9 @@ section {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
-  perspective: 1400px;
+  width: 100%;
 }
 
 .card-empty {
@@ -674,6 +681,7 @@ section {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(15, 24, 48, 0.7);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text);
   font-family: var(--mono);
   font-size: 13px;
@@ -712,8 +720,7 @@ section {
 }
 
 .card {
-  background: linear-gradient(180deg, rgba(19, 30, 61, 0.75), rgba(10, 16, 32, 0.92));
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(19, 30, 61, 0.78), rgba(10, 16, 32, 0.94));
   border: 1px solid rgba(77, 216, 255, 0.14);
   border-radius: 18px;
   overflow: hidden;
@@ -722,7 +729,7 @@ section {
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
   position: relative;
   width: 100%;
-  transform-style: preserve-3d;
+  min-width: 0;
 }
 
 .card:hover {
@@ -826,7 +833,6 @@ section {
   padding: 16px 16px 18px;
   position: relative;
   z-index: 2;
-  transform: translateZ(20px);
 }
 
 .card-meta {
@@ -862,6 +868,7 @@ section {
   font-size: 16px;
   font-weight: 600;
   line-height: 1.35;
+  overflow-wrap: break-word;
 }
 
 .card-body p {
@@ -874,6 +881,7 @@ section {
 .skills-panel {
   background: rgba(15, 24, 48, 0.78);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(77, 216, 255, 0.18);
   border-radius: 18px;
   padding: 32px;
@@ -882,7 +890,6 @@ section {
   box-shadow:
     0 24px 60px rgba(2, 6, 23, 0.6),
     0 0 30px rgba(47, 111, 237, 0.12);
-  transform-style: preserve-3d;
 }
 
 .terminal-head {
@@ -907,7 +914,6 @@ section {
   align-items: center;
   gap: 12px;
   margin-bottom: 14px;
-  transform: translateZ(14px);
 }
 
 .skill-line .name {
@@ -922,6 +928,7 @@ section {
   background: rgba(34, 48, 79, 0.8);
   border-radius: 4px;
   overflow: hidden;
+  min-width: 80px;
 }
 
 .skill-line .bar-fill {
@@ -935,6 +942,7 @@ section {
   color: var(--cyan);
   width: 40px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .tag-cloud {
@@ -942,7 +950,6 @@ section {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 24px;
-  transform: translateZ(18px);
 }
 
 .tag {
@@ -959,7 +966,7 @@ section {
 .tag:hover {
   border-color: var(--cyan);
   background: rgba(77, 216, 255, 0.18);
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(77, 216, 255, 0.2);
 }
 
@@ -970,10 +977,12 @@ section {
   border-radius: 18px;
   background: rgba(15, 24, 48, 0.75);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 24px 0;
   margin-top: 28px;
   position: relative;
   box-shadow: 0 16px 40px rgba(2, 6, 23, 0.45);
+  width: 100%;
 }
 
 .marquee-wrap::before,
@@ -982,7 +991,7 @@ section {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 60px;
+  width: 48px;
   z-index: 2;
   pointer-events: none;
 }
@@ -1035,7 +1044,7 @@ section {
 
 .icon-badge:hover {
   border-color: var(--cyan);
-  transform: translateY(-4px) scale(1.04);
+  transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(77, 216, 255, 0.2);
 }
 
@@ -1076,10 +1085,10 @@ section {
   padding: 28px 32px;
   background: rgba(15, 24, 48, 0.72);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(77, 216, 255, 0.16);
   border-radius: 18px;
   box-shadow: 0 20px 45px rgba(2, 6, 23, 0.45);
-  transform-style: preserve-3d;
 }
 
 .edu-row h3 {
@@ -1111,10 +1120,12 @@ section {
   padding: 80px 24px;
   background: linear-gradient(180deg, rgba(15, 24, 48, 0.4), rgba(47, 111, 237, 0.12));
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(77, 216, 255, 0.16);
   border-radius: 24px;
   margin-bottom: 60px;
   box-shadow: 0 28px 65px rgba(2, 6, 23, 0.6);
+  width: calc(100% - 48px);
 }
 
 .contact-cta .tc-label {
@@ -1152,13 +1163,14 @@ section {
   border-radius: 10px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
   transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s var(--ease-out);
 }
 
 .btn:hover {
-  transform: translateY(-3px) scale(1.02);
+  transform: translateY(-2px);
 }
 
 .btn-primary {
@@ -1195,40 +1207,67 @@ footer {
   z-index: 1;
   background: rgba(8, 13, 24, 0.85);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE (TABLET & MOBILE) ===== */
 @media (max-width: 960px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 720px) {
+  .timeline-track {
+    padding: 0 12px;
+  }
+  .tl-item {
+    padding: 12px 14px;
+  }
   .hero {
     grid-template-columns: 1fr;
     text-align: center;
-    padding-top: 40px;
+    padding-top: 36px;
+    gap: 28px;
   }
   .avatar-wrap-3d {
     margin: 0 auto;
+    width: 164px;
+    height: 164px;
+  }
+  .avatar {
+    width: 156px;
+    height: 156px;
   }
   .eyebrow {
     justify-content: center;
+    font-size: 11px;
   }
   .hero p.desc {
     margin-left: auto;
     margin-right: auto;
+    font-size: 15px;
   }
   .contact-row {
     justify-content: center;
   }
+  .chip {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+  .section-head h2 {
+    font-size: 26px;
+  }
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .skills-panel {
+    padding: 20px 16px;
   }
   .skill-line {
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
   .skill-line .name {
     width: 100%;
@@ -1236,7 +1275,7 @@ footer {
   .tabs {
     flex-wrap: wrap;
     overflow-x: visible;
-    row-gap: 10px;
+    row-gap: 8px;
     column-gap: 8px;
   }
   .tab {
@@ -1246,17 +1285,25 @@ footer {
     max-width: 100%;
   }
   #work {
-    padding-top: 72px;
+    padding-top: 64px;
   }
   #work .section-head {
     margin-bottom: 24px;
   }
   section {
-    padding: 64px 20px;
+    padding: 56px 16px;
   }
   .edu-row {
     flex-direction: column;
     gap: 10px;
     padding: 20px;
+  }
+  .contact-cta {
+    width: calc(100% - 32px);
+    padding: 48px 20px;
+    margin-bottom: 40px;
+  }
+  .contact-cta h2 {
+    font-size: 28px;
   }
 }

@@ -21,14 +21,16 @@ export function init3DBackground() {
     document.body.prepend(canvas);
   }
 
+  const isMobile = window.innerWidth < 768;
+
   const renderer = new THREE.WebGLRenderer({
     canvas,
     alpha: true,
-    antialias: window.innerWidth > 768,
+    antialias: !isMobile,
     powerPreference: 'high-performance'
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5));
+  renderer.setSize(window.innerWidth, window.innerHeight, false);
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x080d18, 0.028);
@@ -39,7 +41,7 @@ export function init3DBackground() {
     0.1,
     120
   );
-  camera.position.set(0, 1.5, 16);
+  camera.position.set(0, 1.5, isMobile ? 19 : 16);
 
   // ----- Nhóm chứa toàn bộ vật thể 3D -----
   const worldGroup = new THREE.Group();
@@ -49,12 +51,11 @@ export function init3DBackground() {
   const gridHelper = new THREE.GridHelper(90, 45, 0x4dd8ff, 0x1b3e9e);
   gridHelper.position.y = -6.5;
   gridHelper.material.transparent = true;
-  gridHelper.material.opacity = 0.22;
+  gridHelper.material.opacity = isMobile ? 0.16 : 0.22;
   scene.add(gridHelper);
 
   // ----- 2. Hệ thống hạt sáng 3D (Particle Field) -----
-  const isMobile = window.innerWidth < 768;
-  const particleCount = isMobile ? 380 : 850;
+  const particleCount = isMobile ? 320 : 850;
   const positions = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
 
@@ -81,7 +82,7 @@ export function init3DBackground() {
     size: 0.14,
     vertexColors: true,
     transparent: true,
-    opacity: 0.75,
+    opacity: 0.72,
     blending: THREE.AdditiveBlending
   });
 
@@ -91,48 +92,48 @@ export function init3DBackground() {
   // ----- 3. Các khối đa diện 3D nghệ thuật (Floating 3D Shapes) -----
   const shapes = [];
 
-  // Khối 1: Icosahedron Wireframe + Lõi phát sáng (Góc phải Hero)
+  // Khối 1: Icosahedron Wireframe + Lõi phát sáng
   const icoGroup = new THREE.Group();
-  const icoGeo = new THREE.IcosahedronGeometry(2.4, 1);
+  const icoGeo = new THREE.IcosahedronGeometry(isMobile ? 1.7 : 2.4, 1);
   const icoMat = new THREE.MeshBasicMaterial({
     color: 0x4dd8ff,
     wireframe: true,
     transparent: true,
-    opacity: 0.26
+    opacity: isMobile ? 0.18 : 0.26
   });
-  const icoInnerGeo = new THREE.IcosahedronGeometry(1.35, 0);
+  const icoInnerGeo = new THREE.IcosahedronGeometry(isMobile ? 0.95 : 1.35, 0);
   const icoInnerMat = new THREE.MeshBasicMaterial({
     color: 0x2f6fed,
     wireframe: true,
     transparent: true,
-    opacity: 0.4
+    opacity: isMobile ? 0.28 : 0.4
   });
   icoGroup.add(new THREE.Mesh(icoGeo, icoMat));
   icoGroup.add(new THREE.Mesh(icoInnerGeo, icoInnerMat));
-  icoGroup.position.set(isMobile ? 4.2 : 8.5, 3.2, -2);
+  icoGroup.position.set(isMobile ? 3.2 : 8.5, isMobile ? 4.8 : 3.2, -3);
   worldGroup.add(icoGroup);
   shapes.push({ mesh: icoGroup, speedX: 0.003, speedY: 0.005, floatOffset: 0 });
 
-  // Khối 2: Vòng Lens / Cuộn phim 3D (Torus + Ring ở góc trái)
+  // Khối 2: Vòng Lens / Cuộn phim 3D (Torus + Ring)
   const lensGroup = new THREE.Group();
-  const torusGeo = new THREE.TorusGeometry(2.1, 0.06, 16, 64);
+  const torusGeo = new THREE.TorusGeometry(isMobile ? 1.5 : 2.1, 0.06, 16, 64);
   const torusMat = new THREE.MeshBasicMaterial({
     color: 0x4dd8ff,
     transparent: true,
-    opacity: 0.35
+    opacity: isMobile ? 0.22 : 0.35
   });
-  const torus2Geo = new THREE.TorusGeometry(1.6, 0.04, 12, 48);
+  const torus2Geo = new THREE.TorusGeometry(isMobile ? 1.1 : 1.6, 0.04, 12, 48);
   const torus2Mat = new THREE.MeshBasicMaterial({
     color: 0x2f6fed,
     wireframe: true,
     transparent: true,
-    opacity: 0.3
+    opacity: isMobile ? 0.2 : 0.3
   });
   const meshT1 = new THREE.Mesh(torusGeo, torusMat);
   const meshT2 = new THREE.Mesh(torus2Geo, torus2Mat);
   meshT2.rotation.x = Math.PI / 3;
   lensGroup.add(meshT1, meshT2);
-  lensGroup.position.set(isMobile ? -4.2 : -9.2, -1.2, -4);
+  lensGroup.position.set(isMobile ? -3.2 : -9.2, isMobile ? -3.5 : -1.2, -4);
   worldGroup.add(lensGroup);
   shapes.push({ mesh: lensGroup, speedX: 0.004, speedY: -0.004, floatOffset: 2.1 });
 
@@ -149,7 +150,7 @@ export function init3DBackground() {
       color: idx % 2 === 0 ? 0x4dd8ff : 0x2f6fed,
       wireframe: true,
       transparent: true,
-      opacity: 0.24
+      opacity: isMobile ? 0.16 : 0.24
     });
     const m = new THREE.Mesh(octaGeo, mat);
     m.position.set(pos[0], pos[1], pos[2]);
@@ -186,12 +187,19 @@ export function init3DBackground() {
     { passive: true }
   );
 
+  let lastW = window.innerWidth;
   window.addEventListener(
     'resize',
     () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      // Trên điện thoại, thanh địa chỉ ẩn/hiện làm thay đổi innerHeight liên tục.
+      // Chỉ resize nặng khi chiều ngang thay đổi hoặc chênh lệch chiều cao lớn để tránh giật.
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (w === lastW && Math.abs(h - renderer.domElement.height) < 120) return;
+      lastW = w;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(w, h, false);
     },
     { passive: true }
   );
@@ -234,9 +242,10 @@ export function init3DBackground() {
 
 /**
  * 2. Hiệu ứng nghiêng thẻ 3D (3D Perspective Tilt + Specular Glare)
+ *    Chỉ kích hoạt trên thiết bị dùng chuột (PC/Laptop) để không ảnh hưởng cảm ứng trên điện thoại
  */
 export function bind3DTilt(root = document) {
-  if (!window.matchMedia('(pointer: fine)').matches) return;
+  if (!window.matchMedia('(pointer: fine)').matches || window.innerWidth <= 960) return;
 
   const selectors = '.card, .reel, .avatar, .skills-panel, .edu-row, .contact-cta, .tool-card';
   const elements = root.querySelectorAll ? root.querySelectorAll(selectors) : [];
@@ -258,15 +267,14 @@ export function bind3DTilt(root = document) {
       el.classList.contains('contact-cta') ||
       el.classList.contains('tool-card') ||
       el.classList.contains('edu-row');
-    const maxTilt = isLargePanel ? 4.5 : 9;
+    const maxTilt = isLargePanel ? 4 : 8;
 
     let rafId = null;
 
     el.addEventListener(
       'mousemove',
       (e) => {
-        // Không nghiêng nếu đang tương tác trực tiếp với thanh điều khiển video
-        if (el.classList.contains('is-playing')) return;
+        if (el.classList.contains('is-playing') || window.innerWidth <= 960) return;
 
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -280,7 +288,7 @@ export function bind3DTilt(root = document) {
         if (rafId) cancelAnimationFrame(rafId);
         rafId = requestAnimationFrame(() => {
           el.classList.remove('is-resetting');
-          el.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(8px)`;
+          el.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(6px)`;
           el.style.setProperty('--glare-x', `${(pctX * 100).toFixed(1)}%`);
           el.style.setProperty('--glare-y', `${(pctY * 100).toFixed(1)}%`);
         });
@@ -291,13 +299,14 @@ export function bind3DTilt(root = document) {
     el.addEventListener('mouseleave', () => {
       if (rafId) cancelAnimationFrame(rafId);
       el.classList.add('is-resetting');
-      el.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+      el.style.transform = '';
     });
   });
 }
 
 /**
- * 3. Hiệu ứng cuộn trang chiều sâu 3D (3D Scroll Depth Parallax cho các Section)
+ * 3. Hiệu ứng cuộn trang chiều sâu 3D (chỉ áp dụng cho các section gọn trên PC,
+ *    bỏ qua trên điện thoại và các section quá dài như #work để tránh biến dạng/lỗi cảm ứng)
  */
 export function init3DScrollParallax() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -307,6 +316,15 @@ export function init3DScrollParallax() {
   let ticking = false;
 
   function updateDepth() {
+    ticking = false;
+    // Trên điện thoại/tablet: tắt biến dạng 3D trên section để giao diện chuẩn xác tuyệt đối
+    if (window.innerWidth <= 960) {
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].style.transform) sections[i].style.transform = '';
+      }
+      return;
+    }
+
     const vh = window.innerHeight;
     const centerVh = vh * 0.5;
 
@@ -315,16 +333,20 @@ export function init3DScrollParallax() {
       if (!sec.classList.contains('in-view')) continue;
 
       const rect = sec.getBoundingClientRect();
+      // Không xoay 3D với section có chiều cao lớn (như danh sách Dự án #work)
+      if (rect.height > vh * 1.15) {
+        if (sec.style.transform) sec.style.transform = '';
+        continue;
+      }
+
       const secCenter = rect.top + rect.height * 0.5;
-      const distRatio = (secCenter - centerVh) / vh; // -1 .. 1
+      const distRatio = (secCenter - centerVh) / vh;
       const clamped = Math.max(-1, Math.min(1, distRatio));
 
-      // Tạo độ sâu Z-axis nhẹ nhàng khi cuộn qua từng section
-      const translateZ = Math.abs(clamped) * -28;
-      const rotateX = clamped * -2.8;
+      const translateZ = Math.abs(clamped) * -20;
+      const rotateX = clamped * -2.2;
       sec.style.transform = `perspective(1400px) translate3d(0, 0, ${translateZ.toFixed(1)}px) rotateX(${rotateX.toFixed(2)}deg)`;
     }
-    ticking = false;
   }
 
   window.addEventListener(
@@ -337,4 +359,6 @@ export function init3DScrollParallax() {
     },
     { passive: true }
   );
+
+  window.addEventListener('resize', updateDepth, { passive: true });
 }
