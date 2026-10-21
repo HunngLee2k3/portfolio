@@ -26,9 +26,11 @@
 </nav>
 
 <section class="hero reveal" id="home">
-  <div class="avatar" id="avatarEl">
-    <img id="avatarImg" alt="Lê Văn Hùng" decoding="async">
-    <span id="avatarFallback">LV</span>
+  <div class="avatar-wrap-3d">
+    <div class="avatar" id="avatarEl">
+      <img id="avatarImg" alt="Lê Văn Hùng" decoding="async">
+      <span id="avatarFallback">LV</span>
+    </div>
   </div>
   <div>
     <div class="eyebrow">Editor Freelance · Sẵn sàng nhận việc</div>
@@ -135,6 +137,12 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
   import { getFirestore, collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+  import { init3DBackground, bind3DTilt, init3DScrollParallax } from './js/scene3d.js';
+
+  // Khởi chạy không gian 3D WebGL, hiệu ứng nghiêng 3D & chiều sâu cuộn trang
+  init3DBackground();
+  bind3DTilt(document);
+  init3DScrollParallax();
 
   const firebaseConfig = {
     apiKey: 'AIzaSyCBdXaVp9oL-_sOd0gj0iGsZK2fCVrbw3M',
@@ -322,6 +330,17 @@
   document.addEventListener('play', (e) => {
     if (e.target && e.target.tagName === 'VIDEO') {
       pauseAllOtherMedia(e.target);
+      const parentCard = e.target.closest('.card');
+      if (parentCard) {
+        parentCard.classList.add('is-playing');
+        parentCard.style.transform = '';
+      }
+    }
+  }, true);
+
+  document.addEventListener('pause', (e) => {
+    if (e.target && e.target.tagName === 'VIDEO') {
+      e.target.closest('.card')?.classList.remove('is-playing');
     }
   }, true);
 
@@ -530,6 +549,7 @@
     projectsGrid.innerHTML = visibleItems.map(renderProjectCard).join('');
     renderPagination(filtered.length);
     bindYouTubeIframes(projectsGrid);
+    bind3DTilt(projectsGrid);
     requestAnimationFrame(() => {
       observeRevealElements(projectsGrid);
     });

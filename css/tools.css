@@ -30,6 +30,54 @@ body {
   font-family: var(--body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#bg3dCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.tilt-3d {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.18s cubic-bezier(0.03, 0.98, 0.52, 0.99), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.tilt-3d.is-resetting {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    360px circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(77, 216, 255, 0.18),
+    rgba(47, 111, 237, 0.06) 40%,
+    transparent 80%
+  );
+  mix-blend-mode: screen;
+}
+
+.tilt-3d:hover .tilt-glare {
+  opacity: 1;
 }
 
 a {
