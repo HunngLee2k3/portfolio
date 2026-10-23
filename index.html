@@ -14,14 +14,20 @@
 <div class="nav-progress"><div class="nav-progress-fill" id="progressFill"></div></div>
 
 <nav class="timeline-nav">
-  <div class="timeline-track">
-    <div class="tl-item active" data-target="home"><span class="tc">00:00:00</span><span class="lbl">INTRO</span><div class="tick"></div></div>
-    <div class="tl-item" data-target="reel"><span class="tc">00:00:12</span><span class="lbl">SHOWREEL</span><div class="tick"></div></div>
-    <div class="tl-item" data-target="work"><span class="tc">00:00:34</span><span class="lbl">DỰ ÁN</span><div class="tick"></div></div>
-    <div class="tl-item" data-target="skills"><span class="tc">00:01:02</span><span class="lbl">KỸ NĂNG</span><div class="tick"></div></div>
-    <div class="tl-item" data-target="edu"><span class="tc">00:01:18</span><span class="lbl">HỌC VẤN</span><div class="tick"></div></div>
-    <div class="tl-item" data-target="contact"><span class="tc">00:01:40</span><span class="lbl">LIÊN HỆ</span><div class="tick"></div></div>
-    <a class="tl-item tl-item-extra" href="tools.html"><span class="tc">EXTRA</span><span class="lbl">🛠 CÔNG CỤ</span><div class="tick"></div></a>
+  <div class="timeline-bar">
+    <div class="timeline-track">
+      <div class="tl-item active" data-target="home"><span class="tc">00:00:00</span><span class="lbl" data-i18n="nav_intro">INTRO</span><div class="tick"></div></div>
+      <div class="tl-item" data-target="reel"><span class="tc">00:00:12</span><span class="lbl" data-i18n="nav_reel">SHOWREEL</span><div class="tick"></div></div>
+      <div class="tl-item" data-target="work"><span class="tc">00:00:34</span><span class="lbl" data-i18n="nav_work">DỰ ÁN</span><div class="tick"></div></div>
+      <div class="tl-item" data-target="skills"><span class="tc">00:01:02</span><span class="lbl" data-i18n="nav_skills">KỸ NĂNG</span><div class="tick"></div></div>
+      <div class="tl-item" data-target="edu"><span class="tc">00:01:18</span><span class="lbl" data-i18n="nav_edu">HỌC VẤN</span><div class="tick"></div></div>
+      <div class="tl-item" data-target="contact"><span class="tc">00:01:40</span><span class="lbl" data-i18n="nav_contact">LIÊN HỆ</span><div class="tick"></div></div>
+      <a class="tl-item tl-item-extra" href="tools.html"><span class="tc">EXTRA</span><span class="lbl" data-i18n="nav_tools">🛠 CÔNG CỤ</span><div class="tick"></div></a>
+    </div>
+    <button type="button" class="lang-switch" id="langSwitchBtn" aria-label="Switch language">
+      <span class="lang-opt active" data-lang="vi">VI</span>
+      <span class="lang-opt" data-lang="en">EN</span>
+    </button>
   </div>
 </nav>
 
@@ -33,9 +39,9 @@
     </div>
   </div>
   <div>
-    <div class="eyebrow">Editor Freelance · Sẵn sàng nhận việc</div>
-    <h1>Mình là Lê Văn Hùng —<br><span class="grad">kể chuyện bằng khung hình.</span></h1>
-    <p class="desc">Xuất thân từ dân IT nhưng có niềm đam mê lớn với dựng phim. Mình muốn thử sức với công việc edit video bằng một quy trình làm việc khoa học: nhịp cắt có chủ đích, màu sắc nhất quán và quản lý file gọn gàng. Hiện tại, mình đang tìm kiếm cơ hội đầu tiên để cống hiến và phát triển trong ngành Video Editing.</p>
+    <div class="eyebrow" data-i18n="hero_eyebrow">Editor Freelance · Sẵn sàng nhận việc</div>
+    <h1 data-i18n-html="hero_title">Mình là Lê Văn Hùng —<br><span class="grad">kể chuyện bằng khung hình.</span></h1>
+    <p class="desc" data-i18n="hero_desc">Xuất thân từ dân IT nhưng có niềm đam mê lớn với dựng phim. Mình muốn thử sức với công việc edit video bằng một quy trình làm việc khoa học: nhịp cắt có chủ đích, màu sắc nhất quán và quản lý file gọn gàng. Hiện tại, mình đang tìm kiếm cơ hội đầu tiên để cống hiến và phát triển trong ngành Video Editing.</p>
     <div class="contact-row">
       <a class="chip" href="mailto:lehung030203@gmail.com"><span class="dot">✉</span> lehung030203@gmail.com</a>
       <a class="chip" href="tel:0764801355"><span class="dot">☎</span> 0764801355</a>
@@ -48,8 +54,8 @@
 <section id="reel" class="reveal">
   <div class="section-head">
     <span class="tc-label">// 00:00:12</span>
-    <h2>Showreel tổng hợp</h2>
-    <p>30 giây highlight — ghép từ những đoạn cắt mình tự hào nhất trong các dự án gần đây.</p>
+    <h2 data-i18n="reel_title">Showreel tổng hợp</h2>
+    <p data-i18n="reel_desc">30 giây highlight — ghép từ những đoạn cắt mình tự hào nhất trong các dự án gần đây.</p>
   </div>
   <div class="reel" id="reelStage">
     <div class="play-btn" id="reelPlayBtn" aria-label="Phát Showreel">
@@ -64,15 +70,15 @@
 <section id="work" class="reveal">
   <div class="section-head">
     <span class="tc-label">// 00:00:34</span>
-    <h2>Dự án theo ngành</h2>
-    <p>Chọn danh mục để xem các bản dựng phù hợp với từng loại nội dung.</p>
+    <h2 data-i18n="work_title">Dự án theo ngành</h2>
+    <p data-i18n="work_desc">Chọn danh mục để xem các bản dựng phù hợp với từng loại nội dung.</p>
   </div>
   <div class="tabs" id="categoryTabs"></div>
   <div class="grid" id="projectsGrid">
     <div class="card card-empty">
       <div class="card-body">
-        <h3>Đang tải dự án...</h3>
-        <p>Vui lòng chờ vài giây để tải dữ liệu từ hệ thống.</p>
+        <h3 data-i18n="loading_projects_title">Đang tải dự án...</h3>
+        <p data-i18n="loading_projects_desc">Vui lòng chờ vài giây để tải dữ liệu từ hệ thống.</p>
       </div>
     </div>
   </div>
@@ -82,17 +88,17 @@
 <section id="skills" class="reveal">
   <div class="section-head">
     <span class="tc-label">// 00:01:02</span>
-    <h2>Kỹ năng & công cụ</h2>
-    <p>Nền tảng IT giúp mình học công cụ mới nhanh và tối ưu workflow dựng phim.</p>
+    <h2 data-i18n="skills_title">Kỹ năng & công cụ</h2>
+    <p data-i18n="skills_desc">Nền tảng IT giúp mình học công cụ mới nhanh và tối ưu workflow dựng phim.</p>
   </div>
   <div class="skills-panel">
     <div class="terminal-head"><span></span><span></span><span></span></div>
-    <div class="skill-line"><span class="name">Sáng tạo Video AI</span><div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div><span class="pct">95%</span></div>
-    <div class="skill-line"><span class="name">Edit Video</span><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><span class="pct">85%</span></div>
-    <div class="skill-line"><span class="name">Color Grading & Sound Design</span><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div><span class="pct">80%</span></div>
-    <div class="skill-line"><span class="name">Photoshop & Design</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
-    <div class="skill-line"><span class="name">Thumbnail</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
-    <div class="skill-line"><span class="name">Cài Win & Xử lý sự cố phần mềm</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+    <div class="skill-line"><span class="name" data-i18n="skill_1">Sáng tạo Video AI</span><div class="bar-bg"><div class="bar-fill" style="width:95%"></div></div><span class="pct">95%</span></div>
+    <div class="skill-line"><span class="name" data-i18n="skill_2">Edit Video</span><div class="bar-bg"><div class="bar-fill" style="width:85%"></div></div><span class="pct">85%</span></div>
+    <div class="skill-line"><span class="name" data-i18n="skill_3">Color Grading & Sound Design</span><div class="bar-bg"><div class="bar-fill" style="width:80%"></div></div><span class="pct">80%</span></div>
+    <div class="skill-line"><span class="name" data-i18n="skill_4">Photoshop & Design</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+    <div class="skill-line"><span class="name" data-i18n="skill_5">Thumbnail</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
+    <div class="skill-line"><span class="name" data-i18n="skill_6">Cài Win & Xử lý sự cố phần mềm</span><div class="bar-bg"><div class="bar-fill" style="width:70%"></div></div><span class="pct">70%</span></div>
     <div class="tag-cloud">
       <span class="tag">CapCut</span>
       <span class="tag">ChatGPT</span>
@@ -100,7 +106,7 @@
       <span class="tag">Elevenlabs</span>
       <span class="tag">Canva</span>
       <span class="tag">Claude Design</span>
-      <span class="tag">Python (tự động hóa workflow)</span>
+      <span class="tag" data-i18n="tag_python">Python (tự động hóa workflow)</span>
     </div>
   </div>
   <div class="marquee-wrap">
@@ -111,12 +117,12 @@
 <section id="edu" class="reveal">
   <div class="section-head">
     <span class="tc-label">// 00:01:18</span>
-    <h2>Học vấn</h2>
+    <h2 data-i18n="edu_title">Học vấn</h2>
   </div>
   <div class="edu-row">
     <div>
-      <h3>Trường Đại Học Công Nghệ TP.HCM - HUTECH</h3>
-      <p>Ngành: Công nghệ thông tin</p>
+      <h3 data-i18n="edu_school">Trường Đại Học Công Nghệ TP.HCM - HUTECH</h3>
+      <p data-i18n="edu_major">Ngành: Công nghệ thông tin</p>
     </div>
     <span class="tc">2021 — 2025</span>
   </div>
@@ -124,15 +130,15 @@
 
 <section class="contact-cta reveal" id="contact">
   <span class="tc-label">// 00:01:40</span>
-  <h2>Cùng làm việc chứ?</h2>
-  <p>Mình luôn sẵn sàng nhận dự án mới hoặc một cuộc trò chuyện ngắn về công việc.</p>
+  <h2 data-i18n="contact_title">Cùng làm việc chứ?</h2>
+  <p data-i18n="contact_desc">Mình luôn sẵn sàng nhận dự án mới hoặc một cuộc trò chuyện ngắn về công việc.</p>
   <div class="btn-row">
-    <a class="btn btn-primary" href="mailto:lehung030203@gmail.com">Gửi email cho mình</a>
-    <a class="btn btn-ghost" href="#">Tải CV (PDF)</a>
+    <a class="btn btn-primary" href="mailto:lehung030203@gmail.com" data-i18n="contact_btn_email">Gửi email cho mình</a>
+    <a class="btn btn-ghost" href="#" data-i18n="contact_btn_cv">Tải CV (PDF)</a>
   </div>
 </section>
 
-<footer>© 2026 LÊ VĂN HÙNG — VIDEO EDITOR PORTFOLIO · DỰNG BẰNG ĐAM MÊ</footer>
+<footer data-i18n="footer_text">© 2026 LÊ VĂN HÙNG — VIDEO EDITOR PORTFOLIO · DỰNG BẰNG ĐAM MÊ</footer>
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -156,6 +162,129 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // ================= HỆ THỐNG ĐA NGÔN NGỮ (VI / EN) =================
+  const I18N = {
+    vi: {
+      page_title: 'Lê Văn Hùng — Video Editor',
+      nav_intro: 'INTRO',
+      nav_reel: 'SHOWREEL',
+      nav_work: 'DỰ ÁN',
+      nav_skills: 'KỸ NĂNG',
+      nav_edu: 'HỌC VẤN',
+      nav_contact: 'LIÊN HỆ',
+      nav_tools: '🛠 CÔNG CỤ',
+      hero_eyebrow: 'Editor Freelance · Sẵn sàng nhận việc',
+      hero_title: 'Mình là Lê Văn Hùng —<br><span class="grad">kể chuyện bằng khung hình.</span>',
+      hero_desc: 'Xuất thân từ dân IT nhưng có niềm đam mê lớn với dựng phim. Mình muốn thử sức với công việc edit video bằng một quy trình làm việc khoa học: nhịp cắt có chủ đích, màu sắc nhất quán và quản lý file gọn gàng. Hiện tại, mình đang tìm kiếm cơ hội đầu tiên để cống hiến và phát triển trong ngành Video Editing.',
+      reel_title: 'Showreel tổng hợp',
+      reel_desc: '30 giây highlight — ghép từ những đoạn cắt mình tự hào nhất trong các dự án gần đây.',
+      reel_loading: 'Đang tải showreel...',
+      reel_empty: 'Chưa có showreel',
+      reel_live: 'SHOWREEL LIVE',
+      reel_error: 'Không tải được dữ liệu',
+      work_title: 'Dự án theo ngành',
+      work_desc: 'Chọn danh mục để xem các bản dựng phù hợp với từng loại nội dung.',
+      tab_all: 'Tất cả',
+      cat_other: 'Khác',
+      media_image: 'Ảnh',
+      media_video: 'Video',
+      project_default: 'Dự án',
+      page_prev: '← Trang trước',
+      page_next: 'Trang sau →',
+      loading_projects_title: 'Đang tải dự án...',
+      loading_projects_desc: 'Vui lòng chờ vài giây để tải dữ liệu từ hệ thống.',
+      empty_projects_title: 'Chưa có dự án',
+      empty_projects_desc: 'Hãy thêm project từ trang admin để nội dung hiển thị ở đây.',
+      skills_title: 'Kỹ năng & công cụ',
+      skills_desc: 'Nền tảng IT giúp mình học công cụ mới nhanh và tối ưu workflow dựng phim.',
+      skill_1: 'Sáng tạo Video AI',
+      skill_2: 'Edit Video',
+      skill_3: 'Color Grading & Sound Design',
+      skill_4: 'Photoshop & Design',
+      skill_5: 'Thumbnail',
+      skill_6: 'Cài Win & Xử lý sự cố phần mềm',
+      tag_python: 'Python (tự động hóa workflow)',
+      edu_title: 'Học vấn',
+      edu_school: 'Trường Đại Học Công Nghệ TP.HCM - HUTECH',
+      edu_major: 'Ngành: Công nghệ thông tin',
+      contact_title: 'Cùng làm việc chứ?',
+      contact_desc: 'Mình luôn sẵn sàng nhận dự án mới hoặc một cuộc trò chuyện ngắn về công việc.',
+      contact_btn_email: 'Gửi email cho mình',
+      contact_btn_cv: 'Tải CV (PDF)',
+      footer_text: '© 2026 LÊ VĂN HÙNG — VIDEO EDITOR PORTFOLIO · DỰNG BẰNG ĐAM MÊ'
+    },
+    en: {
+      page_title: 'Le Van Hung — Video Editor',
+      nav_intro: 'INTRO',
+      nav_reel: 'SHOWREEL',
+      nav_work: 'PROJECTS',
+      nav_skills: 'SKILLS',
+      nav_edu: 'EDUCATION',
+      nav_contact: 'CONTACT',
+      nav_tools: '🛠 TOOLS',
+      hero_eyebrow: 'Freelance Video Editor · Available for work',
+      hero_title: 'Hi, I\'m Le Van Hung —<br><span class="grad">storytelling through frames.</span>',
+      hero_desc: 'With an IT background and a strong passion for filmmaking, I approach video editing with a structured workflow: purposeful pacing, consistent color grading, and clean file organization. I am currently seeking my first opportunity to contribute and grow professionally in the Video Editing industry.',
+      reel_title: 'Featured Showreel',
+      reel_desc: '30-second highlight reel — a compilation of my proudest cuts from recent projects.',
+      reel_loading: 'Loading showreel...',
+      reel_empty: 'No showreel available',
+      reel_live: 'SHOWREEL LIVE',
+      reel_error: 'Failed to load data',
+      work_title: 'Projects by Category',
+      work_desc: 'Select a category to explore video edits tailored to each content style.',
+      tab_all: 'All',
+      cat_other: 'Other',
+      media_image: 'Image',
+      media_video: 'Video',
+      project_default: 'Project',
+      page_prev: '← Prev',
+      page_next: 'Next →',
+      loading_projects_title: 'Loading projects...',
+      loading_projects_desc: 'Please wait a moment while data loads from the server.',
+      empty_projects_title: 'No projects yet',
+      empty_projects_desc: 'Add projects from the admin panel to display them here.',
+      skills_title: 'Skills & Tools',
+      skills_desc: 'My IT foundation helps me master new tools quickly and optimize my editing workflow.',
+      skill_1: 'AI Video Creation',
+      skill_2: 'Video Editing',
+      skill_3: 'Color Grading & Sound Design',
+      skill_4: 'Photoshop & Design',
+      skill_5: 'Thumbnail Design',
+      skill_6: 'OS Setup & Software Troubleshooting',
+      tag_python: 'Python (Workflow Automation)',
+      edu_title: 'Education',
+      edu_school: 'Ho Chi Minh City University of Technology (HUTECH)',
+      edu_major: 'Major: Information Technology',
+      contact_title: 'Let\'s Work Together!',
+      contact_desc: 'I\'m always open to new projects or a quick chat about collaboration opportunities.',
+      contact_btn_email: 'Send me an email',
+      contact_btn_cv: 'Download CV (PDF)',
+      footer_text: '© 2026 LE VAN HUNG — VIDEO EDITOR PORTFOLIO · EDITED WITH PASSION'
+    }
+  };
+
+  const CATEGORY_TRANSLATIONS = {
+    'TVC / Quảng cáo': 'TVC / Commercials',
+    'Quảng cáo': 'Commercials',
+    'Khác': 'Other'
+  };
+
+  let currentLang = localStorage.getItem('portfolio_lang') === 'en' ? 'en' : 'vi';
+  let isDataLoaded = false;
+  let hasLoadError = false;
+
+  function t(key) {
+    return I18N[currentLang]?.[key] || I18N.vi[key] || key;
+  }
+
+  function translateCategoryName(name = '') {
+    if (currentLang === 'en' && CATEGORY_TRANSLATIONS[name]) {
+      return CATEGORY_TRANSLATIONS[name];
+    }
+    return name;
+  }
+
   const sections = Array.from(document.querySelectorAll('section[id]'));
   const navItems = document.querySelectorAll('.tl-item[data-target]');
   const progressFill = document.getElementById('progressFill');
@@ -171,6 +300,7 @@
   const reelPlayBtn = document.getElementById('reelPlayBtn');
   const reelLabel = document.getElementById('reelLabel');
   const reelDuration = document.getElementById('reelDuration');
+  const langSwitchBtn = document.getElementById('langSwitchBtn');
 
   let categories = [];
   let projects = [];
@@ -179,6 +309,55 @@
   let currentPage = 1;
   let lastActiveSection = 'home';
   const itemsPerPage = 6;
+
+  function applyLanguage(lang) {
+    currentLang = lang === 'en' ? 'en' : 'vi';
+    localStorage.setItem('portfolio_lang', currentLang);
+    document.documentElement.lang = currentLang;
+    document.title = t('page_title');
+
+    // Cập nhật trạng thái nút VI / EN
+    if (langSwitchBtn) {
+      langSwitchBtn.querySelectorAll('.lang-opt').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.lang === currentLang);
+      });
+    }
+
+    // Cập nhật toàn bộ text tĩnh có data-i18n và data-i18n-html
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (key) el.textContent = t(key);
+    });
+
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if (key) el.innerHTML = t(key);
+    });
+
+    // Cập nhật nhãn Showreel
+    if (hasLoadError) {
+      reelLabel.textContent = t('reel_error');
+    } else if (!isDataLoaded) {
+      reelLabel.textContent = t('reel_loading');
+    } else if (!currentShowreelUrl) {
+      reelLabel.textContent = t('reel_empty');
+    } else {
+      reelLabel.textContent = t('reel_live');
+    }
+
+    // Cập nhật lại Tabs danh mục & danh sách Dự án nếu dữ liệu đã tải
+    if (isDataLoaded) {
+      renderCategoryTabs();
+      renderProjects();
+    }
+  }
+
+  if (langSwitchBtn) {
+    langSwitchBtn.addEventListener('click', () => {
+      const nextLang = currentLang === 'vi' ? 'en' : 'vi';
+      applyLanguage(nextLang);
+    });
+  }
 
   function scrollToSection(id) {
     const el = document.getElementById(id);
@@ -262,14 +441,12 @@
   const ytPlayers = new Map();
 
   function pauseAllOtherMedia(activeElement = null) {
-    // 1. Tạm dừng tất cả thẻ <video> khác
     document.querySelectorAll('video').forEach(video => {
       if (video !== activeElement && !video.paused) {
         video.pause();
       }
     });
 
-    // 2. Tạm dừng tất cả YouTube <iframe> khác (không reload lại iframe để giữ nguyên thời gian đang xem)
     document.querySelectorAll('iframe').forEach(iframe => {
       if (iframe !== activeElement) {
         const player = ytPlayers.get(iframe);
@@ -292,7 +469,6 @@
           const player = new window.YT.Player(iframe, {
             events: {
               onStateChange: (event) => {
-                // YT.PlayerState.PLAYING === 1
                 if (event.data === 1) {
                   pauseAllOtherMedia(iframe);
                 }
@@ -312,7 +488,6 @@
     });
   }
 
-  // Tải YouTube IFrame API để bắt chính xác sự kiện Play trên video YouTube
   (function loadYouTubeAPI() {
     if (document.getElementById('yt-iframe-api')) return;
     window.onYouTubeIframeAPIReady = () => {
@@ -326,7 +501,6 @@
     document.head.appendChild(tag);
   })();
 
-  // Khi một thẻ <video> bất kỳ được bấm Play -> dừng các video & YouTube khác
   document.addEventListener('play', (e) => {
     if (e.target && e.target.tagName === 'VIDEO') {
       pauseAllOtherMedia(e.target);
@@ -344,7 +518,6 @@
     }
   }, true);
 
-  // Dự phòng khi người dùng click thẳng vào một iframe YouTube
   window.addEventListener('blur', () => {
     setTimeout(() => {
       if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
@@ -381,7 +554,6 @@
     return project.videoURL || project.videoUrl || project.video || project.url || project.link || project.embedUrl || '';
   }
 
-  // Generate instant lightweight thumbnail for Cloudinary videos or fallback
   function getVideoPosterUrl(videoUrl, rawThumb) {
     if (rawThumb && !isVideoUrl(rawThumb)) {
       return rawThumb;
@@ -423,23 +595,24 @@
   function renderProjectCard(project) {
     const media = getMediaMarkup(project);
     const hasMedia = Boolean(getProjectMediaUrl(project) || project.thumbnail || project.imageUrl || project.imageURL);
-    const metaLabel = project.mediaType === 'image' ? 'Ảnh' : (project.duration || 'Video');
+    const metaLabel = project.mediaType === 'image' ? t('media_image') : (project.duration || t('media_video'));
+    const catLabel = translateCategoryName(project.category || t('cat_other'));
     return `
       <div class="card reveal">
         <div class="card-thumb ${hasMedia ? 'has-media' : ''}">
           ${media}
           <div class="thumb-overlay">
-            <span class="thumb-pill">${escapeHtml(project.category || 'Khác')}</span>
+            <span class="thumb-pill">${escapeHtml(catLabel)}</span>
             <span class="dur">${escapeHtml(metaLabel)}</span>
           </div>
         </div>
         <div class="card-body">
           <div class="card-meta">
-            <span class="cat">${escapeHtml(project.category || 'Khác')}</span>
+            <span class="cat">${escapeHtml(catLabel)}</span>
             <span class="dot"></span>
             <span class="mini-label">${escapeHtml(metaLabel)}</span>
           </div>
-          <h3>${escapeHtml(project.name || 'Dự án')}</h3>
+          <h3>${escapeHtml(project.name || t('project_default'))}</h3>
         </div>
       </div>
     `;
@@ -459,7 +632,7 @@
 
     const prevBtn = document.createElement('button');
     prevBtn.className = 'page-btn nav';
-    prevBtn.textContent = '← Trang trước';
+    prevBtn.textContent = t('page_prev');
     prevBtn.disabled = currentPage === 1;
     prevBtn.addEventListener('click', () => {
       if (currentPage > 1) {
@@ -485,7 +658,7 @@
 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'page-btn nav';
-    nextBtn.textContent = 'Trang sau →';
+    nextBtn.textContent = t('page_next');
     nextBtn.disabled = currentPage === totalPages;
     nextBtn.addEventListener('click', () => {
       if (currentPage < totalPages) {
@@ -533,8 +706,8 @@
       projectsGrid.innerHTML = `
         <div class="card card-empty">
           <div class="card-body">
-            <h3>Chưa có dự án</h3>
-            <p>Hãy thêm project từ trang admin để nội dung hiển thị ở đây.</p>
+            <h3>${escapeHtml(t('empty_projects_title'))}</h3>
+            <p>${escapeHtml(t('empty_projects_desc'))}</p>
           </div>
         </div>`;
       projectsPagination.innerHTML = '';
@@ -563,9 +736,9 @@
       return 0;
     });
     const tabs = [
-      { label: 'Tất cả', value: 'all' },
+      { label: t('tab_all'), value: 'all' },
       ...sortedCategories.map(cat => ({
-        label: `${cat.name}`,
+        label: translateCategoryName(`${cat.name}`),
         value: cat.name,
         icon: cat.iconUrl || cat.emoji || '🎬'
       }))
@@ -577,7 +750,7 @@
       button.type = 'button';
       button.dataset.category = tab.value;
       if (tab.value === 'all') {
-        button.textContent = 'Tất cả';
+        button.textContent = tab.label;
       } else if (tab.icon && /^https?:\/\//i.test(tab.icon)) {
         button.innerHTML = `<img src="${escapeAttr(tab.icon)}" alt="" loading="lazy"> <span>${escapeHtml(tab.label)}</span>`;
       } else {
@@ -596,12 +769,12 @@
     reelStage.classList.remove('is-video', 'is-playing');
 
     if (!url) {
-      reelLabel.textContent = 'Chưa có showreel';
+      reelLabel.textContent = t('reel_empty');
       reelDuration.textContent = '00:00';
       return;
     }
 
-    reelLabel.textContent = 'SHOWREEL LIVE';
+    reelLabel.textContent = t('reel_live');
     reelDuration.textContent = '00:30';
 
     if (isYouTubeUrl(url)) {
@@ -662,6 +835,8 @@
         .map(d => ({ id: d.id, ...d.data() }))
         .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
+      isDataLoaded = true;
+      hasLoadError = false;
       setAvatar(avatarUrl);
       renderShowreel(showreelUrl);
       renderCategoryTabs();
@@ -669,7 +844,8 @@
       renderProjects();
     } catch (error) {
       console.error('Portfolio data load failed', error);
-      reelLabel.textContent = 'Không tải được dữ liệu';
+      hasLoadError = true;
+      reelLabel.textContent = t('reel_error');
     }
   }
 
@@ -720,6 +896,8 @@
     trackMarquee.appendChild(fragment);
   })();
 
+  // Khởi tạo ngôn ngữ đã lưu (mặc định: Tiếng Việt)
+  applyLanguage(currentLang);
   loadPortfolioData();
 </script>
 </body>
